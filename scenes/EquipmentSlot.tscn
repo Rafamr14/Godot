@@ -1,0 +1,53 @@
+[gd_scene format=3 uid="uid://btvf8p2f13ksy"]
+
+[node name="EquipmentSlot" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+
+[node name="SlotLabel" type="Label" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="ItemDisplay" type="Control" parent="."]
+visible = false
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="ItemName" type="Label" parent="ItemDisplay"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="ItemLevel" type="Label" parent="ItemDisplay"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="MainStat" type="Label" parent="ItemDisplay"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="RarityBorder" type="ColorRect" parent="ItemDisplay"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="SetLabel" type="Label" parent="ItemDisplay"]
+visible = false
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="EmptyDisplay" type="Control" parent="."]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="SlotIcon" type="Label" parent="EmptyDisplay"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+text = "+"
