@@ -102,6 +102,82 @@ size_flags_vertical = 3
 layout_mode = 2
 size_flags_horizontal = 3
 
+[node name="ChapterCard1" type="Button" parent="MainContainer/ContentContainer/LeftPanel/ScrollContainer/ChapterList"]
+custom_minimum_size = Vector2(360, 100)
+layout_mode = 2
+
+[node name="ChapterCard1BG" type="ColorRect" parent="MainContainer/ContentContainer/LeftPanel/ScrollContainer/ChapterList/ChapterCard1"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.15, 0.2, 0.3, 1)
+
+[node name="ChapterCard1Content" type="HBoxContainer" parent="MainContainer/ContentContainer/LeftPanel/ScrollContainer/ChapterList/ChapterCard1"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 15.0
+offset_top = 10.0
+offset_right = -15.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ChapterIcon1" type="Label" parent="MainContainer/ContentContainer/LeftPanel/ScrollContainer/ChapterList/ChapterCard1/ChapterCard1Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "🌲"
+
+[node name="ChapterInfo1" type="VBoxContainer" parent="MainContainer/ContentContainer/LeftPanel/ScrollContainer/ChapterList/ChapterCard1/ChapterCard1Content"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ChapterName1" type="Label" parent="MainContainer/ContentContainer/LeftPanel/ScrollContainer/ChapterList/ChapterCard1/ChapterCard1Content/ChapterInfo1"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Forest of Beginnings"
+
+[node name="ChapterDesc1" type="Label" parent="MainContainer/ContentContainer/LeftPanel/ScrollContainer/ChapterList/ChapterCard1/ChapterCard1Content/ChapterInfo1"]
+modulate = Color(0.8, 0.8, 0.9, 1)
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "A peaceful forest where adventures begin"
+
+[node name="ChapterProgress1" type="Label" parent="MainContainer/ContentContainer/LeftPanel/ScrollContainer/ChapterList/ChapterCard1/ChapterCard1Content/ChapterInfo1"]
+modulate = Color(0.7, 0.9, 1, 1)
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "Progress: 0/10 stages"
+
+[node name="ChapterStatus1" type="VBoxContainer" parent="MainContainer/ContentContainer/LeftPanel/ScrollContainer/ChapterList/ChapterCard1/ChapterCard1Content"]
+layout_mode = 2
+
+[node name="PowerReq1" type="Label" parent="MainContainer/ContentContainer/LeftPanel/ScrollContainer/ChapterList/ChapterCard1/ChapterCard1Content/ChapterStatus1"]
+modulate = Color(1, 0.8, 0.4, 1)
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "Power: 500+"
+horizontal_alignment = 1
+
+[node name="Stars1" type="HBoxContainer" parent="MainContainer/ContentContainer/LeftPanel/ScrollContainer/ChapterList/ChapterCard1/ChapterCard1Content/ChapterStatus1"]
+layout_mode = 2
+
+[node name="Star1_1" type="Label" parent="MainContainer/ContentContainer/LeftPanel/ScrollContainer/ChapterList/ChapterCard1/ChapterCard1Content/ChapterStatus1/Stars1"]
+layout_mode = 2
+text = "⭐"
+
+[node name="Star1_2" type="Label" parent="MainContainer/ContentContainer/LeftPanel/ScrollContainer/ChapterList/ChapterCard1/ChapterCard1Content/ChapterStatus1/Stars1"]
+layout_mode = 2
+text = "⭐"
+
+[node name="Star1_3" type="Label" parent="MainContainer/ContentContainer/LeftPanel/ScrollContainer/ChapterList/ChapterCard1/ChapterCard1Content/ChapterStatus1/Stars1"]
+layout_mode = 2
+text = "⭐"
+
 [node name="Separator2" type="VSeparator" parent="MainContainer/ContentContainer"]
 layout_mode = 2
 

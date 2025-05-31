@@ -1,4 +1,4 @@
-# ==== TEAM FORMATION UI - UPDATED FOR NEW SCENE ====
+# ==== TEAM FORMATION UI - ARREGLADO PARA CARGAR PERSONAJES ====
 extends Control
 
 # Referencias UI principales
@@ -48,13 +48,148 @@ signal back_pressed()
 signal team_updated()
 
 func _ready():
-	print("TeamFormationUI: Inicializando sistema rediseñado...")
+	print("TeamFormationUI: Inicializando sistema con carga automática de personajes...")
 	await _initialize_systems()
+	await _ensure_characters_loaded()  # NUEVO: Cargar personajes siempre
 	_setup_filter_and_sort_arrays()
 	_setup_connections()
 	_update_character_list()
 	_update_team_display()
 	print("TeamFormationUI: Listo para usar!")
+
+# ==== NUEVO: CARGAR PERSONAJES AUTOMÁTICAMENTE ====
+func _ensure_characters_loaded():
+	"""Asegurar que los personajes estén cargados en el GameManager"""
+	if not game_manager:
+		print("TeamFormationUI: GameManager no disponible")
+		return
+	
+	# Si el inventario está vacío, cargar desde Data/Characters
+	if game_manager.player_inventory.is_empty():
+		print("TeamFormationUI: Inventario vacío, cargando personajes desde Data/Characters...")
+		var characters = _load_characters_from_data()
+		game_manager.player_inventory = characters
+		print("TeamFormationUI: Cargados ", characters.size(), " personajes")
+	else:
+		print("TeamFormationUI: Encontrados ", game_manager.player_inventory.size(), " personajes en inventario")
+
+func _load_characters_from_data() -> Array[Character]:
+	"""Cargar todos los personajes desde Data/Characters"""
+	var characters: Array[Character] = []
+	var characters_path = "res://Data/Characters/"
+	
+	# Verificar si la carpeta existe
+	if not DirAccess.dir_exists_absolute(characters_path):
+		print("TeamFormationUI: Data/Characters no existe, creando personajes de ejemplo...")
+		_create_example_characters()
+		return game_manager.player_inventory if game_manager else []
+	
+	var dir = DirAccess.open(characters_path)
+	if not dir:
+		print("TeamFormationUI: Error al abrir Data/Characters")
+		return characters
+	
+	dir.list_dir_begin()
+	var file_name = dir.get_next()
+	
+	while file_name != "":
+		# Solo procesar archivos .tres y .res
+		if file_name.ends_with(".tres") or file_name.ends_with(".res"):
+			var full_path = characters_path + file_name
+			var loaded_character = _load_character_file(full_path)
+			
+			if loaded_character:
+				characters.append(loaded_character)
+				print("TeamFormationUI: ✓ Cargado: ", loaded_character.character_name, " desde ", file_name)
+			else:
+				print("TeamFormationUI: ✗ Error cargando: ", file_name)
+		
+		file_name = dir.get_next()
+	
+	dir.list_dir_end()
+	
+	# Si no se encontraron personajes, crear algunos de ejemplo
+	if characters.is_empty():
+		print("TeamFormationUI: No se encontraron personajes, creando ejemplos...")
+		_create_example_characters()
+		return game_manager.player_inventory if game_manager else []
+	
+	return characters
+
+func _load_character_file(file_path: String) -> Character:
+	"""Cargar un archivo de personaje específico"""
+	var resource = load(file_path)
+	
+	if not resource:
+		print("TeamFormationUI: Error: No se pudo cargar ", file_path)
+		return null
+	
+	# Verificar si es un Character directo
+	if resource is Character:
+		return resource
+	
+	# Verificar si es un CharacterTemplate
+	if resource is CharacterTemplate:
+		var level = randi_range(1, 5)  # Nivel aleatorio 1-5
+		var character = resource.create_character_instance(level)
+		return character
+	
+	print("TeamFormationUI: Error: Archivo no es Character ni CharacterTemplate: ", file_path)
+	return null
+
+func _create_example_characters():
+	"""Crear personajes de ejemplo si no hay ninguno en Data/Characters"""
+	if not game_manager:
+		return
+	
+	var characters_path = "res://Data/Characters/"
+	
+	# Crear carpeta si no existe
+	if not DirAccess.dir_exists_absolute(characters_path):
+		var dir = DirAccess.open("res://")
+		if dir:
+			dir.make_dir_recursive("Data/Characters")
+			print("TeamFormationUI: ✓ Carpeta Data/Characters creada")
+	
+	# Datos de personajes de ejemplo
+	var character_data = [
+		{"name": "Forest Warrior", "element": Character.Element.EARTH, "rarity": Character.Rarity.COMMON, "hp": 120, "attack": 22, "defense": 18, "speed": 70},
+		{"name": "Fire Mage", "element": Character.Element.FIRE, "rarity": Character.Rarity.RARE, "hp": 90, "attack": 35, "defense": 12, "speed": 85},
+		{"name": "Water Healer", "element": Character.Element.WATER, "rarity": Character.Rarity.RARE, "hp": 110, "attack": 18, "defense": 20, "speed": 80},
+		{"name": "Radiant Knight", "element": Character.Element.RADIANT, "rarity": Character.Rarity.EPIC, "hp": 150, "attack": 28, "defense": 25, "speed": 65},
+		{"name": "Void Assassin", "element": Character.Element.VOID, "rarity": Character.Rarity.EPIC, "hp": 85, "attack": 40, "defense": 10, "speed": 95}
+	]
+	
+	for data in character_data:
+		var character = Character.new()
+		var level = randi_range(1, 3)
+		
+		character.setup(
+			data.name,
+			level,
+			data.rarity,
+			data.element,
+			data.hp + (level - 1) * 8,
+			data.attack + (level - 1) * 3,
+			data.defense + (level - 1) * 2,
+			data.speed + (level - 1) * 1,
+			0.15 + randf() * 0.05,
+			1.5 + randf() * 0.2
+		)
+		
+		# Agregar al inventario del game manager
+		game_manager.player_inventory.append(character)
+		
+		# Intentar guardar en archivo también
+		var filename = data.name.to_snake_case() + "_lv" + str(level) + ".tres"
+		var result = ResourceSaver.save(character, characters_path + filename)
+		
+		if result == OK:
+			print("TeamFormationUI: ✓ Generado: ", character.character_name, " en ", filename)
+		else:
+			print("TeamFormationUI: ✗ Error generando: ", character.character_name)
+	
+	print("TeamFormationUI: Personajes de ejemplo creados en Data/Characters/")
 
 # ==== INICIALIZACIÓN DE SISTEMAS ====
 func _initialize_systems():
@@ -86,7 +221,7 @@ func _initialize_systems():
 	
 	# Crear CharacterMenuSystem si no existe
 	if not character_menu_system:
-		print("Creating CharacterMenuSystem...")
+		print("TeamFormationUI: Creating CharacterMenuSystem...")
 		character_menu_system = CharacterMenuSystem.new()
 		character_menu_system.name = "CharacterMenuSystem"
 		get_tree().current_scene.add_child(character_menu_system)
@@ -95,7 +230,7 @@ func _initialize_systems():
 		if game_manager and not game_manager.player_team.is_empty():
 			character_menu_system.set_team_formation(game_manager.player_team)
 	
-	print("✓ Team Formation systems initialized")
+	print("TeamFormationUI: ✓ Team Formation systems initialized")
 
 func _find_node_by_script(script_name: String) -> Node:
 	for node in get_tree().current_scene.get_children():
@@ -178,6 +313,7 @@ func _update_button_states():
 # ==== ACTUALIZACIÓN DE LISTAS ====
 func _update_character_list():
 	if not character_list or not game_manager:
+		print("TeamFormationUI: No character_list o game_manager para actualizar")
 		return
 		
 	# Limpiar lista existente
@@ -194,11 +330,28 @@ func _update_character_list():
 	# Actualizar stats
 	_update_stats_display(sorted_characters)
 	
+	# Si no hay personajes disponibles, mostrar mensaje
+	if sorted_characters.is_empty():
+		_show_no_characters_message()
+		return
+	
 	# Crear cards para cada personaje disponible
 	for character in sorted_characters:
 		var card = _create_character_card(character)
 		if card:  # Solo agregar si la card no es null
 			character_list.add_child(card)
+
+func _show_no_characters_message():
+	"""Mostrar mensaje cuando no hay personajes disponibles"""
+	var message_label = Label.new()
+	message_label.text = "No characters available.\nAll characters are already in the team,\nor no characters have been loaded."
+	message_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	message_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	message_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	message_label.custom_minimum_size = Vector2(450, 100)
+	message_label.add_theme_font_size_override("font_size", 14)
+	message_label.modulate = Color(0.8, 0.8, 0.9, 1)
+	character_list.add_child(message_label)
 
 func _get_available_characters(characters: Array[Character]) -> Array[Character]:
 	"""Filtrar personajes que NO están en el equipo actual"""
@@ -261,21 +414,21 @@ func _create_character_card(character: Character) -> Control:
 	# Verificar si está en el equipo ANTES de crear el texto
 	var is_in_team = character_menu_system and character in character_menu_system.current_team
 	
-	# Crear texto detallado del personaje
-	var card_text = character.character_name + " Lv." + str(character.level) + "\n"
-	card_text += character.get_element_name() + " | " + Character.Rarity.keys()[character.rarity] + " | Power: " + str(_calculate_character_power(character))
-	
 	# Solo mostrar personajes que NO están en el equipo
 	if is_in_team:
 		# NO crear la card para personajes que ya están en el equipo
 		card.queue_free()
 		return null
-	else:
-		card.modulate = character.get_rarity_color()
-		card.text = card_text
-		
-		# Conexión para agregar al equipo
-		card.pressed.connect(func(): _add_character_to_team(character))
+	
+	# Crear texto detallado del personaje
+	var card_text = character.character_name + " Lv." + str(character.level) + "\n"
+	card_text += character.get_element_name() + " | " + Character.Rarity.keys()[character.rarity] + " | Power: " + str(_calculate_character_power(character))
+	
+	card.text = card_text
+	card.modulate = character.get_rarity_color()
+	
+	# Conexión para agregar al equipo
+	card.pressed.connect(func(): _add_character_to_team(character))
 	
 	return card
 
@@ -285,7 +438,7 @@ func _add_character_to_team(character: Character):
 		return
 	
 	if character_menu_system.add_to_team(character):
-		print("Added ", character.character_name, " to team")
+		print("TeamFormationUI: Added ", character.character_name, " to team")
 		_update_character_list()  # Refrescar para mostrar que está en equipo
 		_update_team_display()
 		team_updated.emit()
@@ -297,7 +450,7 @@ func _remove_character_from_team(character: Character):
 		return
 	
 	if character_menu_system.remove_from_team(character):
-		print("Removed ", character.character_name, " from team")
+		print("TeamFormationUI: Removed ", character.character_name, " from team")
 		_update_character_list()  # Refrescar para mostrar disponible
 		_update_team_display()
 		team_updated.emit()
@@ -392,9 +545,6 @@ func _on_team_slot_input(event: InputEvent, slot_index: int):
 			var character = current_team[slot_index]
 			_remove_character_from_team(character)
 
-# ==== ANÁLISIS DEL EQUIPO ====
-# Team Analysis removido según requerimiento del usuario
-
 # ==== ACCIONES RÁPIDAS ====
 func _on_clear_team():
 	"""Limpiar todo el equipo"""
@@ -455,3 +605,9 @@ func get_current_team() -> Array[Character]:
 	if character_menu_system:
 		return character_menu_system.current_team
 	return []
+
+func force_reload_characters():
+	"""Función pública para forzar recarga de personajes"""
+	await _ensure_characters_loaded()
+	_update_character_list()
+	_update_team_display()
