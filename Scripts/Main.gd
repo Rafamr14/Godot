@@ -34,12 +34,11 @@ func _ready():
 	main_menu = get_node_or_null("MainMenu")
 
 	_setup_connections()
+	_initialize_enhanced_starter_characters()  # Agregar esta línea
 	print("Main.gd _ready() finished.")
 
 	# Mostrar menú inicial claramente
 	_show_screen("main_menu")
-
-
 
 func _diagnose_input_blockers(node: Node, depth: int):
 	if node is Control:
@@ -325,30 +324,138 @@ func _initialize_enhanced_starter_characters():
 	if not game_manager:
 		return
 		
-	print("Creating starter characters...")
+	print("Loading characters from Data folder...")
 	
 	# Limpiar inventario anterior
 	game_manager.player_inventory.clear()
 	game_manager.player_team.clear()
 	
-	# Crear personajes iniciales con stats completos
+	# Cargar personajes desde la carpeta Data
+	var characters_from_data = _load_characters_from_data_folder()
+	
+	if characters_from_data.is_empty():
+		print("No characters found in Data folder, creating default characters...")
+		_create_default_characters_from_templates()
+	else:
+		print("Loaded ", characters_from_data.size(), " characters from Data folder")
+		game_manager.player_inventory = characters_from_data
+		
+		# Seleccionar primeros 2 personajes para el equipo inicial
+		if characters_from_data.size() >= 2:
+			game_manager.player_team = [characters_from_data[0], characters_from_data[1]]
+		elif characters_from_data.size() == 1:
+			game_manager.player_team = [characters_from_data[0]]
+		
+		if character_menu_system and not game_manager.player_team.is_empty():
+			character_menu_system.set_team_formation(game_manager.player_team)
+
+func _load_characters_from_data_folder() -> Array[Character]:
+	var characters: Array[Character] = []
+	var data_path = "res://Data/"
+	
+	# Verificar si la carpeta Data existe
+	if not DirAccess.dir_exists_absolute(data_path):
+		print("Data folder not found at: ", data_path)
+		return characters
+	
+	var dir = DirAccess.open(data_path)
+	if not dir:
+		print("Could not open Data folder")
+		return characters
+	
+	dir.list_dir_begin()
+	var file_name = dir.get_next()
+	
+	while file_name != "":
+		if file_name.ends_with(".tres") or file_name.ends_with(".res"):
+			var full_path = data_path + file_name
+			print("Trying to load: ", full_path)
+			
+			var resource = load(full_path)
+			if resource:
+				if resource is Character:
+					characters.append(resource)
+					print("✓ Loaded Character: ", resource.character_name)
+				elif resource is CharacterTemplate:
+					var character = resource.create_character_instance(randi_range(1, 5))
+					characters.append(character)
+					print("✓ Loaded CharacterTemplate: ", resource.character_name)
+				else:
+					print("- Skipped unknown resource type in: ", file_name)
+			else:
+				print("- Failed to load resource: ", file_name)
+		
+		file_name = dir.get_next()
+	
+	return characters
+
+func _create_default_characters_from_templates():
+	print("Creating default characters using CharacterDatabase...")
+	
+	# Intentar usar CharacterDatabase
+	var character_db = CharacterDatabase.get_instance()
+	if character_db and character_db.character_templates.size() > 0:
+		print("Found CharacterDatabase with ", character_db.character_templates.size(), " templates")
+		
+		# Crear personajes desde templates
+		for template in character_db.character_templates:
+			var level = randi_range(1, 3)  # Nivel aleatorio 1-3
+			var character = template.create_character_instance(level)
+			game_manager.player_inventory.append(character)
+			print("Created character from template: ", character.character_name, " Lv.", level)
+		
+		# Equipo inicial: primeros 2 personajes
+		if game_manager.player_inventory.size() >= 2:
+			game_manager.player_team = [game_manager.player_inventory[0], game_manager.player_inventory[1]]
+		elif game_manager.player_inventory.size() == 1:
+			game_manager.player_team = [game_manager.player_inventory[0]]
+		
+		if character_menu_system and not game_manager.player_team.is_empty():
+			character_menu_system.set_team_formation(game_manager.player_team)
+		
+		# Opcionalmente, guardar en Data para futuras cargas
+		_save_characters_to_data_folder()
+	else:
+		print("CharacterDatabase not available, creating minimal fallback characters...")
+		_create_minimal_fallback_characters()
+
+func _save_characters_to_data_folder():
+	print("Saving generated characters to Data folder...")
+	var data_path = "res://Data/"
+	
+	# Crear carpeta Data si no existe
+	if not DirAccess.dir_exists_absolute(data_path):
+		var dir_access = DirAccess.open("res://")
+		if dir_access:
+			dir_access.make_dir("Data")
+			print("Created Data folder")
+	
+	# Guardar cada personaje
+	for i in range(game_manager.player_inventory.size()):
+		var character = game_manager.player_inventory[i]
+		var filename = character.character_name.to_snake_case() + "_" + str(i) + ".tres"
+		var full_path = data_path + filename
+		
+		var result = ResourceSaver.save(character, full_path)
+		if result == OK:
+			print("✓ Saved character: ", filename)
+		else:
+			print("✗ Failed to save character: ", filename, " Error: ", result)
+
+func _create_minimal_fallback_characters():
+	print("Creating minimal fallback characters...")
+	
 	var warrior = Character.new()
-	warrior.setup("Radiant Warrior", 1, Character.Rarity.RARE, Character.Element.RADIANT, 120, 25, 18, 75, 0.15, 1.5)
+	warrior.setup("Basic Warrior", 1, Character.Rarity.COMMON, Character.Element.RADIANT, 100, 20, 15, 70, 0.12, 1.4)
 	
 	var mage = Character.new()
-	mage.setup("Void Mage", 1, Character.Rarity.RARE, Character.Element.VOID, 90, 30, 12, 85, 0.20, 1.6)
+	mage.setup("Basic Mage", 1, Character.Rarity.COMMON, Character.Element.FIRE, 80, 25, 10, 80, 0.15, 1.5)
 	
-	var healer = Character.new()
-	healer.setup("Water Priest", 1, Character.Rarity.RARE, Character.Element.WATER, 100, 20, 15, 80, 0.10, 1.4)
-	
-	# Agregar al inventario
-	game_manager.player_inventory.append_array([warrior, mage, healer])
-	
-	# Equipo inicial
+	game_manager.player_inventory.append_array([warrior, mage])
 	game_manager.player_team = [warrior, mage]
 	
 	if character_menu_system:
-		character_menu_system.set_team_formation([warrior, mage])
+		character_menu_system.set_team_formation(game_manager.player_team)
 
 func _show_screen(screen_name: String):
 	print("Mostrando pantalla:", screen_name)
@@ -375,17 +482,96 @@ func _show_screen(screen_name: String):
 			new_scene = load("res://scenes/GachaUI.tscn").instantiate()
 		"inventory":
 			new_scene = load("res://scenes/InventoryUI.tscn").instantiate()
+			# MODIFICACIÓN: Configurar el inventario después de cargar
+			if new_scene:
+				call_deferred("_setup_inventory_scene", new_scene)
 		"character_detail":
 			new_scene = load("res://scenes/CharacterDetailUI.tscn").instantiate()
 		"main_menu":
 			if main_menu:
 				main_menu.visible = true
+				_update_main_menu_display()  # Actualizar display al volver
 				return  # No hace falta cargar otra escena aquí
 
 	# Añade la nueva escena como hija
 	if new_scene:
 		add_child(new_scene)
 
+# NUEVA FUNCIÓN: Configurar la escena de inventario
+func _setup_inventory_scene(inventory_scene: Control):
+	print("Setting up inventory scene...")
+	
+	# Conectar botón de back si existe
+	var back_button = inventory_scene.get_node_or_null("VBoxContainer/BackButton")
+	if back_button:
+		back_button.pressed.connect(_on_inventory_back_pressed)
+	
+	# IMPORTANTE: Limpiar cualquier contenido existente del scroll container
+	var scroll_container = inventory_scene.get_node_or_null("VBoxContainer/ScrollContainer")
+	if scroll_container:
+		# Eliminar TODOS los hijos existentes para evitar duplicados
+		for child in scroll_container.get_children():
+			child.queue_free()
+		await get_tree().process_frame
+	
+	# Llenar con personajes del inventario
+	_populate_inventory_scene(inventory_scene)
+
+# NUEVA FUNCIÓN: Llenar inventario con personajes
+func _populate_inventory_scene(inventory_scene: Control):
+	if not game_manager:
+		return
+	
+	# Actualizar estadísticas
+	var stats_label = inventory_scene.get_node_or_null("VBoxContainer/StatsLabel")
+	if stats_label:
+		stats_label.text = "Total Heroes: " + str(game_manager.player_inventory.size()) + " | Total Power: " + str(_calculate_total_inventory_power())
+	
+	# Buscar o crear contenedor de personajes
+	var scroll_container = inventory_scene.get_node_or_null("VBoxContainer/ScrollContainer")
+	if not scroll_container:
+		return
+	
+	# CAMBIO: Buscar InventoryList existente primero
+	var inventory_list = scroll_container.get_node_or_null("InventoryList")
+	if not inventory_list:
+		# Si no existe, buscarlo en diferentes ubicaciones
+		inventory_list = scroll_container.get_node_or_null("CharacterGrid")
+		if not inventory_list:
+			# Crear nuevo contenedor VBoxContainer para lista vertical
+			inventory_list = VBoxContainer.new()
+			inventory_list.name = "InventoryList"
+			scroll_container.add_child(inventory_list)
+	
+	# IMPORTANTE: Limpiar TODOS los hijos del scroll container para evitar duplicados
+	for child in scroll_container.get_children():
+		if child != inventory_list:
+			child.queue_free()
+	
+	# Limpiar lista existente
+	for child in inventory_list.get_children():
+		child.queue_free()
+	
+	await get_tree().process_frame
+	
+	# Ordenar personajes por poder
+	var sorted_characters = game_manager.player_inventory.duplicate()
+	sorted_characters.sort_custom(func(a, b): return _calculate_character_power(a) > _calculate_character_power(b))
+	
+	# Crear entrada para cada personaje (SOLO VERSION RECTANGULAR)
+	for character in sorted_characters:
+		var character_entry = _create_inventory_entry(character)
+		inventory_list.add_child(character_entry)
+
+# NUEVA FUNCIÓN: Calcular poder total del inventario
+func _calculate_total_inventory_power() -> int:
+	if not game_manager:
+		return 0
+	
+	var total_power = 0
+	for character in game_manager.player_inventory:
+		total_power += _calculate_character_power(character)
+	return total_power
 
 func _hide_all_screens():
 	_set_visibility_recursive(main_menu, false)
@@ -401,7 +587,6 @@ func _set_visibility_recursive(node: Node, visibility: bool):
 		(node as CanvasItem).visible = visibility
 	for child in node.get_children():
 		_set_visibility_recursive(child, visibility)
-
 
 func _update_main_menu_display():
 	if not main_menu or not game_manager:
@@ -590,43 +775,20 @@ func _update_gacha_display():
 	if pity_label:
 		pity_label.text = "Pity: " + str(gacha_system.pity_counter) + "/90"
 
-# ==== INVENTORY FUNCTIONS ====
+# ==== INVENTORY FUNCTIONS SIMPLIFICADAS ====
 
-func _update_inventory_display():
-	if not inventory_ui or not game_manager:
-		return
-		
-	var inventory_list = inventory_ui.get_node_or_null("VBoxContainer/ScrollContainer/InventoryList")
-	var stats_label = inventory_ui.get_node_or_null("VBoxContainer/StatsLabel")
-	
-	if stats_label:
-		stats_label.text = "Total Heroes: " + str(game_manager.player_inventory.size())
-	
-	if not inventory_list:
-		return
-		
-	# Limpiar lista existente
-	for child in inventory_list.get_children():
-		child.queue_free()
-	
-	await get_tree().process_frame
-	
-	# Ordenar personajes por poder
-	var sorted_characters = game_manager.player_inventory.duplicate()
-	sorted_characters.sort_custom(func(a, b): return _calculate_character_power(a) > _calculate_character_power(b))
-	
-	# Crear entradas para cada personaje
-	for character in sorted_characters:
-		var character_entry = _create_inventory_entry(character)
-		inventory_list.add_child(character_entry)
+# Esta función ya no es necesaria porque _populate_inventory_scene hace todo
+# func _update_inventory_display(): 
+#	Eliminada para evitar duplicación
 
 func _create_inventory_entry(character: Character) -> Control:
 	var entry = Button.new()
-	entry.custom_minimum_size = Vector2(380, 60)
+	entry.custom_minimum_size = Vector2(380, 80)  # Hacer más alto para mejor visibilidad
 	
+	# Crear texto con información del personaje
 	var entry_text = character.character_name + " Lv." + str(character.level) + "\n"
-	entry_text += character.get_element_name() + " | Power: " + str(_calculate_character_power(character))
-	entry_text += " | HP: " + str(character.max_hp) + " ATK: " + str(character.attack)
+	entry_text += character.get_element_name() + " | " + Character.Rarity.keys()[character.rarity] + " | Power: " + str(_calculate_character_power(character)) + "\n"
+	entry_text += "HP: " + str(character.max_hp) + " | ATK: " + str(character.attack) + " | DEF: " + str(character.defense) + " | SPD: " + str(character.speed)
 	
 	entry.text = entry_text
 	entry.modulate = character.get_rarity_color()
