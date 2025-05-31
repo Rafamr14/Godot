@@ -1,4 +1,4 @@
-# ==== EQUIPMENT SYSTEM COMPLETO (Equipment.gd) ====
+# ==== EQUIPMENT SYSTEM CORREGIDO (Equipment.gd) ====
 class_name Equipment
 extends Resource
 
@@ -47,7 +47,7 @@ enum ArtifactSet {
 @export var main_stat: StatType = StatType.ATTACK
 @export var main_stat_value: float = 0.0
 
-# Substats (hasta 4 como Epic Seven)
+# Substats (hasta 4 como Epic Seven) - CORREGIDO: Array genérico
 @export var substats: Array = []  # Array de SubStatData
 @export var max_substats: int = 4
 
@@ -111,7 +111,7 @@ func _get_initial_substat_count() -> int:
 		EquipmentRarity.LEGENDARY: return 4
 		_: return 2
 
-func _get_available_substats() -> Array[StatType]:
+func _get_available_substats() -> Array:  # CORREGIDO: Array genérico
 	var all_stats = [
 		StatType.HP, StatType.HP_PERCENT,
 		StatType.ATTACK, StatType.ATTACK_PERCENT,
@@ -319,7 +319,7 @@ class EnhanceResultData:
 	var success: bool = false
 	var new_level: int = 0
 	var total_cost: int = 0
-	var enhanced_substats: Array = []  # Array de SubStatData
+	var enhanced_substats: Array = []  # CORREGIDO: Array genérico
 	var message: String = ""
 
 # ==== FUNCIONES ESTÁTICAS PARA STATS ====

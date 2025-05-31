@@ -1,4 +1,4 @@
-# ==== GACHA BANNER SYSTEM (GachaBanner.gd) ====
+# ==== GACHA BANNER SYSTEM CORREGIDO (GachaBanner.gd) ====
 class_name GachaBanner
 extends Resource
 
@@ -23,11 +23,11 @@ extends Resource
 @export var soft_pity_start: int = 75
 @export var guaranteed_5star_pity: int = 180  # Para banners limitados
 
-# Pools de personajes con probabilidades
-@export var character_pools: Array[GachaPool] = []
+# Pools de personajes con probabilidades - CORREGIDO: Array genérico
+@export var character_pools: Array = []  # Array de GachaPool
 
-# Personajes destacados/rate-up
-@export var featured_characters: Array[String] = []  # IDs de personajes
+# Personajes destacados/rate-up - CORREGIDO: Array genérico
+@export var featured_characters: Array = []  # Array de String (IDs)
 @export var rate_up_multiplier: float = 2.0
 
 func setup(id: String, name: String, desc: String):
@@ -98,12 +98,16 @@ func perform_ten_pull(pity_counter: int = 0) -> GachaPullResult:
 	
 	# Garantizar al menos un raro en 10-pull
 	if not _has_rare_or_higher(result.characters_obtained):
-		result.characters_obtained[9] = _get_guaranteed_rare()
+		# Reemplazar el último personaje con uno raro garantizado
+		if result.characters_obtained.size() > 0:
+			result.characters_obtained[result.characters_obtained.size() - 1] = _get_guaranteed_rare()
+		else:
+			result.characters_obtained.append(_get_guaranteed_rare())
 	
 	return result
 
-func _apply_pity_rates(pity_counter: int) -> Array[float]:
-	var adjusted_rates: Array[float] = []
+func _apply_pity_rates(pity_counter: int) -> Array:  # CORREGIDO: Array genérico
+	var adjusted_rates: Array = []
 	
 	for pool in character_pools:
 		var base_rate = pool.drop_rate
@@ -152,9 +156,9 @@ func _get_character_from_pool(pool: GachaPool) -> Character:
 		fallback_char.setup("Unknown Hero", 1, pool.rarity, Character.Element.WATER, 100, 20, 10, 80)
 		return fallback_char
 
-func _has_rare_or_higher(characters: Array[Character]) -> bool:
+func _has_rare_or_higher(characters: Array) -> bool:  # CORREGIDO: Array genérico
 	for character in characters:
-		if character.rarity >= Character.Rarity.RARE:
+		if character is Character and character.rarity >= Character.Rarity.RARE:
 			return true
 	return false
 

@@ -4,7 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://da6uyufppxqhb" path="res://Images/blank.webp" id="2_ih41r"]
 [ext_resource type="Script" uid="uid://oyxpiaumjh2a" path="res://Scripts/CharacterTemplate.gd" id="2_n2xkv"]
 [ext_resource type="Script" uid="uid://dp54ekhc5dxxt" path="res://Scripts/SkillTemplate.gd" id="3_ih41r"]
-[ext_resource type="Resource" uid="uid://damnaqduby66w" path="res://Data/3001.tres" id="5_ih41r"]
+[ext_resource type="Resource" uid="uid://bn1nf0ji2155l" path="res://Data/Skills/3001.tres" id="5_ih41r"]
 
 [resource]
 script = ExtResource("2_n2xkv")

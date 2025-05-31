@@ -1,13 +1,13 @@
-# ==== GACHA POOL (GachaPool.gd) ====
+# ==== GACHA POOL CORREGIDO (GachaPool.gd) ====
 class_name GachaPool
 extends Resource
 
 @export var pool_name: String
 @export var rarity: Character.Rarity = Character.Rarity.COMMON
 @export var drop_rate: float = 0.7  # Probabilidad de este pool
-@export var character_ids: Array[String] = []  # IDs de personajes en este pool
+@export var character_ids: Array = []  # CORREGIDO: Array genérico de String
 
-func setup(name: String, rar: Character.Rarity, rate: float, char_ids: Array[String]):
+func setup(name: String, rar: Character.Rarity, rate: float, char_ids: Array):
 	pool_name = name
 	rarity = rar
 	drop_rate = rate

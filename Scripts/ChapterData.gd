@@ -5,7 +5,7 @@ extends Resource
 @export var chapter_name: String
 @export var description: String
 @export var max_stages: int
-@export var stages: Array[StageData] = []
+@export var stages: Array = []  # CORREGIDO: Array genérico en lugar de Array[StageData]
 @export var completed: bool = false
 
 func setup(id: int, name: String, desc: String, stages_count: int):

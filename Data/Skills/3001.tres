@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="SkillTemplate" load_steps=3 format=3 uid="uid://damnaqduby66w"]
+[gd_resource type="Resource" script_class="SkillTemplate" load_steps=3 format=3 uid="uid://bn1nf0ji2155l"]
 
 [ext_resource type="Script" uid="uid://dp54ekhc5dxxt" path="res://Scripts/SkillTemplate.gd" id="1_oyi5s"]
 [ext_resource type="Script" uid="uid://6fuqqo4aoqge" path="res://Scripts/StatusEffectTemplate.gd" id="2_ndkfn"]

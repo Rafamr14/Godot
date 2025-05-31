@@ -1,12 +1,12 @@
-# ==== ENHANCED GACHA SYSTEM (EnhancedGachaSystem.gd) ====
+# ==== ENHANCED GACHA SYSTEM CORREGIDO (EnhancedGachaSystem.gd) ====
 class_name EnhancedGachaSystem
 extends Node
 
 signal pull_completed(result: GachaPullResult)
 signal banner_changed(banner: GachaBanner)
 
-# Banners disponibles
-var available_banners: Array[GachaBanner] = []
+# Banners disponibles - CORREGIDO: Array genérico
+var available_banners: Array = []  # Array de GachaBanner
 var current_banner: GachaBanner
 var current_banner_index: int = 0
 
@@ -19,12 +19,34 @@ var game_manager: GameManager
 
 func _ready():
 	await get_tree().process_frame
-	game_manager = get_parent().get_node_or_null("GameManager")
+	await get_tree().process_frame
+	await get_tree().process_frame
+	
+	_find_game_manager()
 	_initialize_default_banners()
 	_set_current_banner(0)
 
+func _find_game_manager():
+	# Buscar GameManager de múltiples maneras
+	game_manager = get_parent().get_node_or_null("GameManager")
+	
+	if not game_manager:
+		game_manager = get_tree().get_first_node_in_group("game_manager")
+	
+	if not game_manager:
+		for node in get_tree().current_scene.get_children():
+			if node.get_script() and node.get_script().get_global_name() == "GameManager":
+				game_manager = node
+				break
+	
+	if game_manager:
+		print("EnhancedGachaSystem: GameManager encontrado")
+	else:
+		print("EnhancedGachaSystem: GameManager no encontrado, algunas funciones limitadas")
+
 func _initialize_default_banners():
 	print("Initializing gacha banners...")
+	available_banners.clear()
 	
 	# Banner Estándar
 	var standard_banner = _create_standard_banner()
@@ -46,27 +68,34 @@ func _create_standard_banner() -> GachaBanner:
 	banner.is_limited = false
 	banner.pity_threshold = 90
 	
+	# CORREGIDO: Usar Array genérico y crear pools correctamente
+	var character_pools = []
+	
 	# Pool de comunes (70%)
 	var common_pool = GachaPool.new()
 	common_pool.setup("Common Heroes", Character.Rarity.COMMON, 0.70, 
 		["basic_warrior", "basic_mage", "basic_archer"])
+	character_pools.append(common_pool)
 	
 	# Pool de raros (25%)
 	var rare_pool = GachaPool.new()
 	rare_pool.setup("Rare Heroes", Character.Rarity.RARE, 0.25, 
 		["radiant_warrior_001", "water_priestess_001", "earth_guardian_001"])
+	character_pools.append(rare_pool)
 	
 	# Pool de épicos (4%)
 	var epic_pool = GachaPool.new()
 	epic_pool.setup("Epic Heroes", Character.Rarity.EPIC, 0.04, 
 		["void_mage_001", "fire_berserker_001"])
+	character_pools.append(epic_pool)
 	
 	# Pool de legendarios (1%)
 	var legendary_pool = GachaPool.new()
 	legendary_pool.setup("Legendary Heroes", Character.Rarity.LEGENDARY, 0.01, 
 		["dragon_lord_001", "archangel_001"])
+	character_pools.append(legendary_pool)
 	
-	banner.character_pools = [common_pool, rare_pool, epic_pool, legendary_pool]
+	banner.character_pools = character_pools
 	return banner
 
 func _create_fire_banner() -> GachaBanner:
@@ -76,24 +105,30 @@ func _create_fire_banner() -> GachaBanner:
 	banner.rate_up_multiplier = 3.0
 	banner.featured_characters = ["fire_berserker_001"]
 	
+	var character_pools = []
+	
 	# Mismo pool pero con rate-up para personajes de fuego
 	var common_pool = GachaPool.new()
 	common_pool.setup("Common Fire", Character.Rarity.COMMON, 0.70, 
 		["fire_soldier", "flame_scout"])
+	character_pools.append(common_pool)
 	
 	var rare_pool = GachaPool.new()
 	rare_pool.setup("Rare Fire", Character.Rarity.RARE, 0.25, 
 		["fire_knight", "flame_archer"])
+	character_pools.append(rare_pool)
 	
 	var epic_pool = GachaPool.new()
 	epic_pool.setup("Epic Fire", Character.Rarity.EPIC, 0.04, 
 		["fire_berserker_001", "inferno_mage"])
+	character_pools.append(epic_pool)
 	
 	var legendary_pool = GachaPool.new()
 	legendary_pool.setup("Legendary Fire", Character.Rarity.LEGENDARY, 0.01, 
 		["dragon_lord_001"])
+	character_pools.append(legendary_pool)
 	
-	banner.character_pools = [common_pool, rare_pool, epic_pool, legendary_pool]
+	banner.character_pools = character_pools
 	return banner
 
 func _create_limited_banner() -> GachaBanner:
@@ -104,27 +139,33 @@ func _create_limited_banner() -> GachaBanner:
 	banner.featured_characters = ["void_emperor_001"]
 	banner.rate_up_multiplier = 5.0
 	
+	var character_pools = []
+	
 	# Pool limitado con Void Emperor
 	var common_pool = GachaPool.new()
 	common_pool.setup("Limited Common", Character.Rarity.COMMON, 0.65, 
 		["void_soldier", "shadow_scout"])
+	character_pools.append(common_pool)
 	
 	var rare_pool = GachaPool.new()
 	rare_pool.setup("Limited Rare", Character.Rarity.RARE, 0.30, 
 		["void_knight", "shadow_mage"])
+	character_pools.append(rare_pool)
 	
 	var epic_pool = GachaPool.new()
 	epic_pool.setup("Limited Epic", Character.Rarity.EPIC, 0.04, 
 		["void_mage_001"])
+	character_pools.append(epic_pool)
 	
 	var legendary_pool = GachaPool.new()
 	legendary_pool.setup("Limited Legendary", Character.Rarity.LEGENDARY, 0.01, 
 		["void_emperor_001"])
+	character_pools.append(legendary_pool)
 	
-	banner.character_pools = [common_pool, rare_pool, epic_pool, legendary_pool]
+	banner.character_pools = character_pools
 	return banner
 
-func get_available_banners() -> Array[GachaBanner]:
+func get_available_banners() -> Array:
 	return available_banners.filter(func(banner): return banner.is_banner_active())
 
 func set_current_banner_by_id(banner_id: String):
@@ -193,8 +234,9 @@ func perform_single_pull() -> GachaPullResult:
 	_update_pity_counters(result)
 	
 	# Agregar personajes al inventario
-	if game_manager:
-		game_manager.player_inventory.append_array(result.characters_obtained)
+	if game_manager and result.characters_obtained.size() > 0:
+		for character in result.characters_obtained:
+			game_manager.player_inventory.append(character)
 	
 	pull_completed.emit(result)
 	return result
@@ -220,8 +262,9 @@ func perform_ten_pull() -> GachaPullResult:
 	_update_pity_counters(result)
 	
 	# Agregar personajes al inventario
-	if game_manager:
-		game_manager.player_inventory.append_array(result.characters_obtained)
+	if game_manager and result.characters_obtained.size() > 0:
+		for character in result.characters_obtained:
+			game_manager.player_inventory.append(character)
 	
 	pull_completed.emit(result)
 	return result
