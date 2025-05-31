@@ -506,19 +506,22 @@ func _setup_inventory_scene(inventory_scene: Control):
 	if back_button:
 		back_button.pressed.connect(_on_inventory_back_pressed)
 	
-	# IMPORTANTE: Limpiar cualquier contenido existente del scroll container
-	var scroll_container = inventory_scene.get_node_or_null("VBoxContainer/ScrollContainer")
-	if scroll_container:
-		# Eliminar TODOS los hijos existentes para evitar duplicados
-		for child in scroll_container.get_children():
-			child.queue_free()
-		await get_tree().process_frame
-	
-	# Llenar con personajes del inventario
-	_populate_inventory_scene(inventory_scene)
+	# IMPORTANTE: Si la escena tiene script, usar su método populate_inventory
+	if inventory_scene.has_method("populate_inventory"):
+		print("Using InventoryUIController script...")
+		# Pasar referencia del game_manager
+		if inventory_scene.has_method("set") and game_manager:
+			inventory_scene.game_manager = game_manager
+		
+		# Llamar al método de población del script de inventario
+		inventory_scene.populate_inventory()
+	else:
+		print("No InventoryUIController script found, using fallback...")
+		# Fallback: usar el método manual solo si no hay script
+		_populate_inventory_scene_manual(inventory_scene)
 
-# NUEVA FUNCIÓN: Llenar inventario con personajes
-func _populate_inventory_scene(inventory_scene: Control):
+# Función manual de fallback (solo si no hay script en la escena)
+func _populate_inventory_scene_manual(inventory_scene: Control):
 	if not game_manager:
 		return
 	
@@ -532,36 +535,31 @@ func _populate_inventory_scene(inventory_scene: Control):
 	if not scroll_container:
 		return
 	
-	# CAMBIO: Buscar InventoryList existente primero
-	var inventory_list = scroll_container.get_node_or_null("InventoryList")
-	if not inventory_list:
-		# Si no existe, buscarlo en diferentes ubicaciones
-		inventory_list = scroll_container.get_node_or_null("CharacterGrid")
-		if not inventory_list:
-			# Crear nuevo contenedor VBoxContainer para lista vertical
-			inventory_list = VBoxContainer.new()
-			inventory_list.name = "InventoryList"
-			scroll_container.add_child(inventory_list)
-	
-	# IMPORTANTE: Limpiar TODOS los hijos del scroll container para evitar duplicados
+	# Limpiar TODOS los hijos del scroll container
 	for child in scroll_container.get_children():
-		if child != inventory_list:
-			child.queue_free()
-	
-	# Limpiar lista existente
-	for child in inventory_list.get_children():
 		child.queue_free()
 	
 	await get_tree().process_frame
+	
+	# Crear nuevo contenedor
+	var inventory_list = VBoxContainer.new()
+	inventory_list.name = "InventoryList"
+	scroll_container.add_child(inventory_list)
 	
 	# Ordenar personajes por poder
 	var sorted_characters = game_manager.player_inventory.duplicate()
 	sorted_characters.sort_custom(func(a, b): return _calculate_character_power(a) > _calculate_character_power(b))
 	
-	# Crear entrada para cada personaje (SOLO VERSION RECTANGULAR)
+	# Crear entrada para cada personaje
 	for character in sorted_characters:
 		var character_entry = _create_inventory_entry(character)
 		inventory_list.add_child(character_entry)
+
+# NUEVA FUNCIÓN: Llenar inventario con personajes (SOLO FALLBACK)
+func _populate_inventory_scene(inventory_scene: Control):
+	# Esta función ya no se usa directamente
+	# Se mantiene solo para compatibilidad
+	_populate_inventory_scene_manual(inventory_scene)
 
 # NUEVA FUNCIÓN: Calcular poder total del inventario
 func _calculate_total_inventory_power() -> int:
