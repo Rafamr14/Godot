@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://cp8rj5wk2xqnf"]
 
-[ext_resource type="Script" path="res://Scripts/GachaResultsUI.gd" id="1_results"]
+[ext_resource type="Script" uid="uid://b4tl5wk2qqyx5" path="res://Scripts/GachaResultsUI.gd" id="1_results"]
 
 [node name="GachaResultsUI" type="Control"]
 layout_mode = 3
@@ -53,8 +53,8 @@ columns = 5
 custom_minimum_size = Vector2(600, 60)
 layout_mode = 2
 text = "Summary will appear here"
-autowrap_mode = 3
 horizontal_alignment = 1
+autowrap_mode = 3
 
 [node name="ContinueButton" type="Button" parent="VBoxContainer"]
 custom_minimum_size = Vector2(200, 50)

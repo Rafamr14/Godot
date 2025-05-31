@@ -1,6 +1,6 @@
-[gd_scene load_steps=2 format=3 uid="uid://character_detail_ui"]
+[gd_scene load_steps=2 format=3 uid="uid://o5w006r4t1io"]
 
-[ext_resource type="Script" path="res://Scripts/CharacterDetailController.gd" id="1_detail"]
+[ext_resource type="Script" uid="uid://bt1ejn3udecaa" path="res://Scripts/CharacterDetailController.gd" id="1_detail"]
 
 [node name="CharacterDetailUI" type="Control"]
 layout_mode = 3

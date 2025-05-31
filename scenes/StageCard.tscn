@@ -1,40 +1,163 @@
 [gd_scene format=3 uid="uid://dq4n5wk0t4qtt"]
 
 [node name="StageCard" type="Button"]
+custom_minimum_size = Vector2(460, 80)
+
+[node name="StageBackground" type="ColorRect" parent="."]
+layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+color = Color(0.12, 0.15, 0.2, 1)
 
-[node name="StageName" type="Label" parent="."]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 23.0
+[node name="StageBorder" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 1.0
+offset_top = 1.0
+offset_right = -1.0
+offset_bottom = -1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.3, 0.4, 0.6, 0.5)
 
-[node name="Enemies" type="Label" parent="."]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 23.0
+[node name="StageInner" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = -3.0
+offset_bottom = -3.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.08, 0.1, 0.15, 1)
 
-[node name="Rewards" type="Label" parent="."]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 23.0
+[node name="MainContainer" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = 8.0
+offset_right = -12.0
+offset_bottom = -8.0
+grow_horizontal = 2
+grow_vertical = 2
 
-[node name="Stars" type="HBoxContainer" parent="."]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="Star1" type="Label" parent="Stars"]
+[node name="LeftInfo" type="VBoxContainer" parent="MainContainer"]
+custom_minimum_size = Vector2(80, 0)
 layout_mode = 2
-text = "★"
 
-[node name="Star2" type="Label" parent="Stars"]
+[node name="StageNumberContainer" type="HBoxContainer" parent="MainContainer/LeftInfo"]
 layout_mode = 2
-text = "★"
 
-[node name="Star3" type="Label" parent="Stars"]
+[node name="StageIcon" type="Label" parent="MainContainer/LeftInfo/StageNumberContainer"]
 layout_mode = 2
-text = "★"
+theme_override_font_sizes/font_size = 20
+text = "⚔️"
+
+[node name="StageNumber" type="Label" parent="MainContainer/LeftInfo/StageNumberContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "1"
+
+[node name="DifficultyIndicator" type="Label" parent="MainContainer/LeftInfo"]
+modulate = Color(0.7, 0.9, 0.7, 1)
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "NORMAL"
+horizontal_alignment = 1
+
+[node name="MiddleInfo" type="VBoxContainer" parent="MainContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="StageName" type="Label" parent="MainContainer/MiddleInfo"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Goblin Outpost"
+
+[node name="EnemiesAndRewards" type="HBoxContainer" parent="MainContainer/MiddleInfo"]
+layout_mode = 2
+
+[node name="EnemiesLabel" type="Label" parent="MainContainer/MiddleInfo/EnemiesAndRewards"]
+modulate = Color(1, 0.7, 0.7, 1)
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "👹 2 enemies"
+
+[node name="RewardsSeparator" type="Label" parent="MainContainer/MiddleInfo/EnemiesAndRewards"]
+modulate = Color(0.6, 0.6, 0.6, 1)
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = " | "
+
+[node name="RewardsLabel" type="Label" parent="MainContainer/MiddleInfo/EnemiesAndRewards"]
+modulate = Color(1, 1, 0.7, 1)
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "💰 150 gold, 75 exp"
+
+[node name="EnergyRequirement" type="Label" parent="MainContainer/MiddleInfo"]
+modulate = Color(0.7, 0.8, 1, 1)
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "⚡ Energy: 5"
+
+[node name="RightStatus" type="VBoxContainer" parent="MainContainer"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+
+[node name="StarsContainer" type="HBoxContainer" parent="MainContainer/RightStatus"]
+layout_mode = 2
+alignment = 1
+
+[node name="Star1" type="Label" parent="MainContainer/RightStatus/StarsContainer"]
+modulate = Color(0.4, 0.4, 0.4, 1)
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "☆"
+
+[node name="Star2" type="Label" parent="MainContainer/RightStatus/StarsContainer"]
+modulate = Color(0.4, 0.4, 0.4, 1)
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "☆"
+
+[node name="Star3" type="Label" parent="MainContainer/RightStatus/StarsContainer"]
+modulate = Color(0.4, 0.4, 0.4, 1)
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "☆"
+
+[node name="StatusInfo" type="VBoxContainer" parent="MainContainer/RightStatus"]
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="CompletedLabel" type="Label" parent="MainContainer/RightStatus/StatusInfo"]
+visible = false
+modulate = Color(0.3, 1, 0.3, 1)
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "✅ CLEARED"
+horizontal_alignment = 1
+
+[node name="LockedLabel" type="Label" parent="MainContainer/RightStatus/StatusInfo"]
+modulate = Color(0.6, 0.6, 0.6, 1)
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "🔒 LOCKED"
+horizontal_alignment = 1
+
+[node name="PlayButton" type="Button" parent="MainContainer/RightStatus"]
+visible = false
+custom_minimum_size = Vector2(60, 25)
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "PLAY"

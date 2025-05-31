@@ -307,6 +307,7 @@ horizontal_alignment = 2
 vertical_alignment = 1
 
 [node name="RemoveHint" type="Label" parent="MainContainer/RightPanel/TeamSlotsContainer/TeamSlots/TeamSlot1/CharacterInfo"]
+modulate = Color(0.7, 0.7, 0.7, 1)
 layout_mode = 1
 anchors_preset = 3
 anchor_left = 1.0
@@ -321,7 +322,6 @@ grow_vertical = 0
 theme_override_font_sizes/font_size = 10
 text = "Right-click to remove"
 horizontal_alignment = 2
-modulate = Color(0.7, 0.7, 0.7, 1)
 
 [node name="TeamSlot2" type="Control" parent="MainContainer/RightPanel/TeamSlotsContainer/TeamSlots"]
 custom_minimum_size = Vector2(480, 80)
@@ -437,6 +437,7 @@ horizontal_alignment = 2
 vertical_alignment = 1
 
 [node name="RemoveHint" type="Label" parent="MainContainer/RightPanel/TeamSlotsContainer/TeamSlots/TeamSlot2/CharacterInfo"]
+modulate = Color(0.7, 0.7, 0.7, 1)
 layout_mode = 1
 anchors_preset = 3
 anchor_left = 1.0
@@ -451,7 +452,6 @@ grow_vertical = 0
 theme_override_font_sizes/font_size = 10
 text = "Right-click to remove"
 horizontal_alignment = 2
-modulate = Color(0.7, 0.7, 0.7, 1)
 
 [node name="TeamSlot3" type="Control" parent="MainContainer/RightPanel/TeamSlotsContainer/TeamSlots"]
 custom_minimum_size = Vector2(480, 80)
@@ -567,6 +567,7 @@ horizontal_alignment = 2
 vertical_alignment = 1
 
 [node name="RemoveHint" type="Label" parent="MainContainer/RightPanel/TeamSlotsContainer/TeamSlots/TeamSlot3/CharacterInfo"]
+modulate = Color(0.7, 0.7, 0.7, 1)
 layout_mode = 1
 anchors_preset = 3
 anchor_left = 1.0
@@ -581,7 +582,6 @@ grow_vertical = 0
 theme_override_font_sizes/font_size = 10
 text = "Right-click to remove"
 horizontal_alignment = 2
-modulate = Color(0.7, 0.7, 0.7, 1)
 
 [node name="TeamSlot4" type="Control" parent="MainContainer/RightPanel/TeamSlotsContainer/TeamSlots"]
 custom_minimum_size = Vector2(480, 80)
@@ -697,6 +697,7 @@ horizontal_alignment = 2
 vertical_alignment = 1
 
 [node name="RemoveHint" type="Label" parent="MainContainer/RightPanel/TeamSlotsContainer/TeamSlots/TeamSlot4/CharacterInfo"]
+modulate = Color(0.7, 0.7, 0.7, 1)
 layout_mode = 1
 anchors_preset = 3
 anchor_left = 1.0
@@ -711,7 +712,6 @@ grow_vertical = 0
 theme_override_font_sizes/font_size = 10
 text = "Right-click to remove"
 horizontal_alignment = 2
-modulate = Color(0.7, 0.7, 0.7, 1)
 
 [node name="Separator3" type="HSeparator" parent="MainContainer/RightPanel"]
 layout_mode = 2

@@ -1,23 +1,154 @@
 [gd_scene format=3 uid="uid://lle5db8tqdyg"]
 
 [node name="ChapterCard" type="Button"]
+custom_minimum_size = Vector2(360, 120)
+
+[node name="CardBackground" type="ColorRect" parent="."]
+layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+color = Color(0.15, 0.15, 0.25, 1)
 
-[node name="ChapterName" type="Label" parent="."]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 23.0
+[node name="BorderGlow" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_top = 2.0
+offset_right = -2.0
+offset_bottom = -2.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.2, 0.3, 0.5, 0.8)
 
-[node name="Description" type="Label" parent="."]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 23.0
+[node name="InnerBackground" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = 4.0
+offset_right = -4.0
+offset_bottom = -4.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.1, 0.1, 0.18, 1)
 
-[node name="Progress" type="Label" parent="."]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 23.0
+[node name="ContentContainer" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 15.0
+offset_top = 10.0
+offset_right = -15.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="LeftSection" type="VBoxContainer" parent="ContentContainer"]
+custom_minimum_size = Vector2(60, 0)
+layout_mode = 2
+
+[node name="ChapterIcon" type="Label" parent="ContentContainer/LeftSection"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 36
+text = "🌲"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ChapterNumber" type="Label" parent="ContentContainer/LeftSection"]
+modulate = Color(0.8, 0.8, 0.9, 1)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Ch. 1"
+horizontal_alignment = 1
+
+[node name="MiddleSection" type="VBoxContainer" parent="ContentContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ChapterName" type="Label" parent="ContentContainer/MiddleSection"]
+clip_contents = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Forest of Beginnings"
+
+[node name="Description" type="Label" parent="ContentContainer/MiddleSection"]
+modulate = Color(0.8, 0.8, 0.9, 1)
+clip_contents = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "A peaceful forest where your journey begins. Face goblins and wild creatures."
+autowrap_mode = 3
+
+[node name="StageProgressContainer" type="HBoxContainer" parent="ContentContainer/MiddleSection"]
+layout_mode = 2
+
+[node name="ProgressLabel" type="Label" parent="ContentContainer/MiddleSection/StageProgressContainer"]
+modulate = Color(0.7, 0.7, 0.8, 1)
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Progress:"
+
+[node name="Progress" type="Label" parent="ContentContainer/MiddleSection/StageProgressContainer"]
+modulate = Color(0.7, 0.9, 1, 1)
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "0/10 stages"
+
+[node name="RightSection" type="VBoxContainer" parent="ContentContainer"]
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+
+[node name="StatusIndicator" type="VBoxContainer" parent="ContentContainer/RightSection"]
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="LockIcon" type="Label" parent="ContentContainer/RightSection/StatusIndicator"]
+modulate = Color(0.6, 0.6, 0.6, 1)
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "🔒"
+horizontal_alignment = 1
+
+[node name="StarsContainer" type="HBoxContainer" parent="ContentContainer/RightSection/StatusIndicator"]
+visible = false
+layout_mode = 2
+alignment = 1
+
+[node name="Star1" type="Label" parent="ContentContainer/RightSection/StatusIndicator/StarsContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "⭐"
+
+[node name="Star2" type="Label" parent="ContentContainer/RightSection/StatusIndicator/StarsContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "⭐"
+
+[node name="Star3" type="Label" parent="ContentContainer/RightSection/StatusIndicator/StarsContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "⭐"
+
+[node name="CompletionBadge" type="Label" parent="ContentContainer/RightSection"]
+visible = false
+modulate = Color(0.2, 1, 0.3, 1)
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "COMPLETE"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="RecommendedPower" type="Label" parent="ContentContainer/RightSection"]
+modulate = Color(1, 0.8, 0.4, 1)
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "Power: 500+"
+horizontal_alignment = 1
+vertical_alignment = 2

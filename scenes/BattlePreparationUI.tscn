@@ -1,0 +1,174 @@
+[gd_scene format=3 uid="uid://p0pf46vtg1sf"]
+
+[node name="BattlePreparationUI" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.05, 0.05, 0.1, 0.95)
+
+[node name="MainContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 50.0
+offset_top = 50.0
+offset_right = -50.0
+offset_bottom = -50.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Header" type="VBoxContainer" parent="MainContainer"]
+layout_mode = 2
+
+[node name="BattleTitle" type="Label" parent="MainContainer/Header"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "⚔️ Battle Preparation"
+horizontal_alignment = 1
+
+[node name="StageInfo" type="Label" parent="MainContainer/Header"]
+modulate = Color(0.8, 0.8, 0.9, 1)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Chapter 1 - Stage 1: Goblin Outpost"
+horizontal_alignment = 1
+
+[node name="Separator1" type="HSeparator" parent="MainContainer"]
+layout_mode = 2
+
+[node name="ContentArea" type="HBoxContainer" parent="MainContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="LeftPanel" type="VBoxContainer" parent="MainContainer/ContentArea"]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+
+[node name="TeamSection" type="VBoxContainer" parent="MainContainer/ContentArea/LeftPanel"]
+layout_mode = 2
+
+[node name="TeamHeader" type="HBoxContainer" parent="MainContainer/ContentArea/LeftPanel/TeamSection"]
+layout_mode = 2
+
+[node name="TeamTitle" type="Label" parent="MainContainer/ContentArea/LeftPanel/TeamSection/TeamHeader"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 20
+text = "👥 Your Team"
+
+[node name="TeamPowerLabel" type="Label" parent="MainContainer/ContentArea/LeftPanel/TeamSection/TeamHeader"]
+modulate = Color(0.7, 1, 0.7, 1)
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Power: 1250"
+horizontal_alignment = 2
+
+[node name="TeamGrid" type="GridContainer" parent="MainContainer/ContentArea/LeftPanel/TeamSection"]
+layout_mode = 2
+columns = 2
+
+[node name="TeamMember1" type="Control" parent="MainContainer/ContentArea/LeftPanel/TeamSection/TeamGrid"]
+custom_minimum_size = Vector2(180, 80)
+layout_mode = 2
+
+[node name="MemberBG1" type="ColorRect" parent="MainContainer/ContentArea/LeftPanel/TeamSection/TeamGrid/TeamMember1"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.2, 0.25, 0.3, 1)
+
+[node name="MemberInfo1" type="VBoxContainer" parent="MainContainer/ContentArea/LeftPanel/TeamSection/TeamGrid/TeamMember1"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 8.0
+offset_right = -10.0
+offset_bottom = -8.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MemberName1" type="Label" parent="MainContainer/ContentArea/LeftPanel/TeamSection/TeamGrid/TeamMember1/MemberInfo1"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Fire Mage"
+
+[node name="MemberDetails1" type="Label" parent="MainContainer/ContentArea/LeftPanel/TeamSection/TeamGrid/TeamMember1/MemberInfo1"]
+modulate = Color(0.8, 0.8, 0.9, 1)
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "Lv.3 | 🔥 Fire | Power: 320"
+
+[node name="MemberHP1" type="ProgressBar" parent="MainContainer/ContentArea/LeftPanel/TeamSection/TeamGrid/TeamMember1/MemberInfo1"]
+layout_mode = 2
+value = 100.0
+show_percentage = false
+
+[node name="TeamMember2" type="Control" parent="MainContainer/ContentArea/LeftPanel/TeamSection/TeamGrid"]
+custom_minimum_size = Vector2(180, 80)
+layout_mode = 2
+
+[node name="MemberBG2" type="ColorRect" parent="MainContainer/ContentArea/LeftPanel/TeamSection/TeamGrid/TeamMember2"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.2, 0.25, 0.3, 1)
+
+[node name="MemberInfo2" type="VBoxContainer" parent="MainContainer/ContentArea/LeftPanel/TeamSection/TeamGrid/TeamMember2"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 8.0
+offset_right = -10.0
+offset_bottom = -8.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MemberName2" type="Label" parent="MainContainer/ContentArea/LeftPanel/TeamSection/TeamGrid/TeamMember2/MemberInfo2"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Forest Warrior"
+
+[node name="MemberDetails2" type="Label" parent="MainContainer/ContentArea/LeftPanel/TeamSection/TeamGrid/TeamMember2/MemberInfo2"]
+modulate = Color(0.8, 0.8, 0.9, 1)
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "Lv.2 | 🌍 Earth | Power: 280"
+
+[node name="MemberHP2" type="ProgressBar" parent="MainContainer/ContentArea/LeftPanel/TeamSection/TeamGrid/TeamMember2/MemberInfo2"]
+layout_mode = 2
+value = 100.0
+show_percentage = false
+
+[node name="TeamMember3" type="Control" parent="MainContainer/ContentArea/LeftPanel/TeamSection/TeamGrid"]
+custom_minimum_size = Vector2(180, 80)
+layout_mode = 2
+
+[node name="MemberBG3" type="ColorRect" parent="MainContainer/ContentArea/LeftPanel/TeamSection/TeamGrid/TeamMember3"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
