@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="SkillTemplate" load_steps=3 format=3 uid="uid://damnaqduby66w"]
+
+[ext_resource type="Script" uid="uid://dp54ekhc5dxxt" path="res://Scripts/SkillTemplate.gd" id="1_oyi5s"]
+[ext_resource type="Script" uid="uid://6fuqqo4aoqge" path="res://Scripts/StatusEffectTemplate.gd" id="2_ndkfn"]
+
+[resource]
+script = ExtResource("1_oyi5s")
+skill_name = "Skill1"
+skill_id = "3001"
+description = ""
+skill_type = 1
+target_type = 0
+element = 0
+base_multiplier = 1.0
+base_cooldown = 2
+energy_cost = 0
+hits = 0
+attack_scaling = 1.0
+hp_scaling = 0.0
+defense_scaling = 0.0
+speed_scaling = 0.0
+status_effect_templates = Array[ExtResource("2_ndkfn")]([])
+effect_chance = 1.0
+cr_boost_self = 0.0
+cr_boost_allies = 0.0
+damage_per_level = 0.05
+cooldown_reduction_levels = Array[int]([])
+animation_name = ""
+metadata/_custom_type_script = "uid://dp54ekhc5dxxt"

@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="StatusEffectTemplate" load_steps=2 format=3 uid="uid://codomsh5vc676"]
+
+[ext_resource type="Script" uid="uid://6fuqqo4aoqge" path="res://Scripts/StatusEffectTemplate.gd" id="1_54iys"]
+
+[resource]
+script = ExtResource("1_54iys")
+effect_name = "Burn"
+effect_type = 11
+base_value = 1.5
+base_duration = 1
+is_debuff = true
+can_stack = false
+max_stacks = 1
+attack_scaling = 2.0
+hp_scaling = 0.0
+metadata/_custom_type_script = "uid://6fuqqo4aoqge"

@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="StatusEffectTemplate" load_steps=2 format=3 uid="uid://ckkw5idh2iaod"]
+
+[ext_resource type="Script" uid="uid://6fuqqo4aoqge" path="res://Scripts/StatusEffectTemplate.gd" id="1_giras"]
+
+[resource]
+script = ExtResource("1_giras")
+effect_name = "Atk +"
+effect_type = 0
+base_value = 2.0
+base_duration = 2
+is_debuff = false
+can_stack = false
+max_stacks = 1
+attack_scaling = 0.0
+hp_scaling = 0.0
+metadata/_custom_type_script = "uid://6fuqqo4aoqge"

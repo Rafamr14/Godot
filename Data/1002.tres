@@ -1,0 +1,42 @@
+[gd_resource type="Resource" script_class="CharacterTemplate" load_steps=5 format=3 uid="uid://dwvk7jdq5bwec"]
+
+[ext_resource type="Script" uid="uid://yru1ukpwhg07" path="res://Scripts/AwakeningMaterial.gd" id="1_36fq3"]
+[ext_resource type="Texture2D" uid="uid://da6uyufppxqhb" path="res://Images/blank.webp" id="2_qpini"]
+[ext_resource type="Script" uid="uid://oyxpiaumjh2a" path="res://Scripts/CharacterTemplate.gd" id="3_cpaky"]
+[ext_resource type="Script" uid="uid://dp54ekhc5dxxt" path="res://Scripts/SkillTemplate.gd" id="4_25lx0"]
+
+[resource]
+script = ExtResource("3_cpaky")
+character_name = "Bicho2"
+character_id = "1002"
+description = ""
+element = 2
+rarity = 3
+character_class = 2
+portrait = ExtResource("2_qpini")
+battle_sprite = ExtResource("2_qpini")
+skill_icons = Array[Texture2D]([])
+base_hp = 100
+base_attack = 20
+base_defense = 10
+base_speed = 80
+base_crit_chance = 0.15
+base_crit_damage = 1.5
+base_effectiveness = 0.0
+base_effect_resistance = 0.0
+base_elemental_mastery = 0.0
+hp_growth = 0.08
+attack_growth = 0.05
+defense_growth = 0.04
+speed_growth = 0.02
+skill_templates = Array[ExtResource("4_25lx0")]([])
+awakening_materials = Array[ExtResource("1_36fq3")]([])
+voice_lines = {
+"defeat": "I'll be stronger next time...",
+"skill_1": "Take this!",
+"skill_2": "Feel my power!",
+"summon": "I'm ready to fight!",
+"ultimate": "This ends now!",
+"victory": "Victory is ours!"
+}
+metadata/_custom_type_script = "uid://oyxpiaumjh2a"
