@@ -1,13 +1,307 @@
-[gd_scene load_steps=2 format=3 uid="uid://o5w006r4t1io"]
+[gd_scene load_steps=2 format=3 uid="uid://character_detail_ui"]
 
-[ext_resource type="Script" uid="uid://bf7oqi7iav30h" path="res://Scripts/CharacterDetailView.gd" id="1_mloet"]
+[ext_resource type="Script" path="res://Scripts/CharacterDetailController.gd" id="1_detail"]
 
 [node name="CharacterDetailUI" type="Control"]
-visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_mloet")
+script = ExtResource("1_detail")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.1, 0.1, 0.1, 0.95)
+
+[node name="MainContainer" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -400.0
+offset_top = -300.0
+offset_right = 400.0
+offset_bottom = 300.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="LeftPanel" type="VBoxContainer" parent="MainContainer"]
+custom_minimum_size = Vector2(350, 0)
+layout_mode = 2
+
+[node name="CharacterSplash" type="Control" parent="MainContainer/LeftPanel"]
+custom_minimum_size = Vector2(350, 400)
+layout_mode = 2
+
+[node name="SplashBackground" type="ColorRect" parent="MainContainer/LeftPanel/CharacterSplash"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.2, 0.2, 0.3, 1)
+
+[node name="SplashBorder" type="ColorRect" parent="MainContainer/LeftPanel/CharacterSplash"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.8, 0.8, 0.8, 1)
+
+[node name="SplashInner" type="ColorRect" parent="MainContainer/LeftPanel/CharacterSplash"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = -3.0
+offset_bottom = -3.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.15, 0.15, 0.2, 1)
+
+[node name="CharacterImage" type="Label" parent="MainContainer/LeftPanel/CharacterSplash"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -50.0
+offset_top = -50.0
+offset_right = 50.0
+offset_bottom = 50.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 72
+text = "🛡️"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ElementIcon" type="Label" parent="MainContainer/LeftPanel/CharacterSplash"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -40.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = 40.0
+grow_horizontal = 0
+theme_override_font_sizes/font_size = 24
+text = "🔥"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="LevelBadge" type="Control" parent="MainContainer/LeftPanel/CharacterSplash"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -80.0
+offset_top = -40.0
+offset_right = -10.0
+offset_bottom = -10.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="LevelBackground" type="ColorRect" parent="MainContainer/LeftPanel/CharacterSplash/LevelBadge"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.2, 0.2, 0.2, 0.9)
+
+[node name="LevelText" type="Label" parent="MainContainer/LeftPanel/CharacterSplash/LevelBadge"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 16
+text = "LV 1"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PowerDisplay" type="Label" parent="MainContainer/LeftPanel"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Power: 0"
+horizontal_alignment = 1
+
+[node name="RightPanel" type="VBoxContainer" parent="MainContainer"]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+
+[node name="Header" type="VBoxContainer" parent="MainContainer/RightPanel"]
+layout_mode = 2
+
+[node name="NameLabel" type="Label" parent="MainContainer/RightPanel/Header"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Character Name"
+horizontal_alignment = 1
+
+[node name="InfoRow" type="HBoxContainer" parent="MainContainer/RightPanel/Header"]
+layout_mode = 2
+alignment = 1
+
+[node name="ElementLabel" type="Label" parent="MainContainer/RightPanel/Header/InfoRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Element"
+
+[node name="Separator1" type="Label" parent="MainContainer/RightPanel/Header/InfoRow"]
+layout_mode = 2
+text = " | "
+
+[node name="RarityLabel" type="Label" parent="MainContainer/RightPanel/Header/InfoRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Rarity"
+
+[node name="Separator2" type="Label" parent="MainContainer/RightPanel/Header/InfoRow"]
+layout_mode = 2
+text = " | "
+
+[node name="ClassLabel" type="Label" parent="MainContainer/RightPanel/Header/InfoRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Class"
+
+[node name="Separator" type="HSeparator" parent="MainContainer/RightPanel"]
+layout_mode = 2
+
+[node name="StatsSection" type="VBoxContainer" parent="MainContainer/RightPanel"]
+layout_mode = 2
+
+[node name="StatsTitle" type="Label" parent="MainContainer/RightPanel/StatsSection"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Stats"
+
+[node name="StatsGrid" type="GridContainer" parent="MainContainer/RightPanel/StatsSection"]
+layout_mode = 2
+columns = 2
+
+[node name="HPLabel" type="Label" parent="MainContainer/RightPanel/StatsSection/StatsGrid"]
+layout_mode = 2
+text = "HP:"
+
+[node name="HPValue" type="Label" parent="MainContainer/RightPanel/StatsSection/StatsGrid"]
+layout_mode = 2
+text = "100"
+
+[node name="AttackLabel" type="Label" parent="MainContainer/RightPanel/StatsSection/StatsGrid"]
+layout_mode = 2
+text = "Attack:"
+
+[node name="AttackValue" type="Label" parent="MainContainer/RightPanel/StatsSection/StatsGrid"]
+layout_mode = 2
+text = "20"
+
+[node name="DefenseLabel" type="Label" parent="MainContainer/RightPanel/StatsSection/StatsGrid"]
+layout_mode = 2
+text = "Defense:"
+
+[node name="DefenseValue" type="Label" parent="MainContainer/RightPanel/StatsSection/StatsGrid"]
+layout_mode = 2
+text = "10"
+
+[node name="SpeedLabel" type="Label" parent="MainContainer/RightPanel/StatsSection/StatsGrid"]
+layout_mode = 2
+text = "Speed:"
+
+[node name="SpeedValue" type="Label" parent="MainContainer/RightPanel/StatsSection/StatsGrid"]
+layout_mode = 2
+text = "80"
+
+[node name="CritChanceLabel" type="Label" parent="MainContainer/RightPanel/StatsSection/StatsGrid"]
+layout_mode = 2
+text = "Crit Rate:"
+
+[node name="CritChanceValue" type="Label" parent="MainContainer/RightPanel/StatsSection/StatsGrid"]
+layout_mode = 2
+text = "15%"
+
+[node name="CritDamageLabel" type="Label" parent="MainContainer/RightPanel/StatsSection/StatsGrid"]
+layout_mode = 2
+text = "Crit DMG:"
+
+[node name="CritDamageValue" type="Label" parent="MainContainer/RightPanel/StatsSection/StatsGrid"]
+layout_mode = 2
+text = "150%"
+
+[node name="Separator2" type="HSeparator" parent="MainContainer/RightPanel"]
+layout_mode = 2
+
+[node name="SkillsSection" type="VBoxContainer" parent="MainContainer/RightPanel"]
+layout_mode = 2
+
+[node name="SkillsTitle" type="Label" parent="MainContainer/RightPanel/SkillsSection"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Skills"
+
+[node name="SkillsList" type="VBoxContainer" parent="MainContainer/RightPanel/SkillsSection"]
+layout_mode = 2
+
+[node name="Separator3" type="HSeparator" parent="MainContainer/RightPanel"]
+layout_mode = 2
+
+[node name="ActionsSection" type="VBoxContainer" parent="MainContainer/RightPanel"]
+layout_mode = 2
+
+[node name="LevelUpContainer" type="HBoxContainer" parent="MainContainer/RightPanel/ActionsSection"]
+layout_mode = 2
+
+[node name="LevelUpButton" type="Button" parent="MainContainer/RightPanel/ActionsSection/LevelUpContainer"]
+custom_minimum_size = Vector2(150, 50)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Level Up"
+
+[node name="LevelUpInfo" type="Label" parent="MainContainer/RightPanel/ActionsSection/LevelUpContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Cost: 100 Gold"
+vertical_alignment = 1
+
+[node name="ButtonsRow" type="HBoxContainer" parent="MainContainer/RightPanel/ActionsSection"]
+layout_mode = 2
+alignment = 1
+
+[node name="EquipmentButton" type="Button" parent="MainContainer/RightPanel/ActionsSection/ButtonsRow"]
+custom_minimum_size = Vector2(120, 40)
+layout_mode = 2
+text = "Equipment"
+
+[node name="SkillsButton" type="Button" parent="MainContainer/RightPanel/ActionsSection/ButtonsRow"]
+custom_minimum_size = Vector2(120, 40)
+layout_mode = 2
+text = "Enhance"
+
+[node name="BackButton" type="Button" parent="MainContainer/RightPanel/ActionsSection"]
+custom_minimum_size = Vector2(200, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 18
+text = "Back to Inventory"

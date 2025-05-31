@@ -495,6 +495,75 @@ func _setup_connections():
 func _on_character_selected(character: Character):
 	print("Character selected: ", character.character_name)
 	character_selected.emit(character)
+	
+	# Cargar pantalla de detalles del personaje
+	_show_character_details(character)
+
+func _show_character_details(character: Character):
+	"""Mostrar pantalla de detalles del personaje"""
+	var detail_scene_path = "res://scenes/CharacterDetailUI.tscn"
+	
+	# Verificar si existe la escena
+	if not ResourceLoader.exists(detail_scene_path):
+		print("CharacterDetailUI.tscn no encontrada, creando pantalla básica...")
+		_show_basic_character_details(character)
+		return
+	
+	# Cargar escena de detalles
+	var detail_scene = load(detail_scene_path)
+	if detail_scene:
+		var detail_ui = detail_scene.instantiate()
+		get_tree().current_scene.add_child(detail_ui)
+		
+		# Configurar personaje
+		if detail_ui.has_method("show_character"):
+			detail_ui.show_character(character)
+		elif detail_ui.has_method("set_character_and_show"):
+			detail_ui.set_character_and_show(character)
+		
+		# Ocultar inventario temporalmente
+		visible = false
+		
+		# Conectar señal de back
+		if detail_ui.has_signal("back_pressed"):
+			detail_ui.back_pressed.connect(_on_character_detail_back)
+		
+		# Conectar señal de actualización
+		if detail_ui.has_signal("character_updated"):
+			detail_ui.character_updated.connect(_on_character_updated)
+	else:
+		print("Error loading CharacterDetailUI.tscn")
+
+func _show_basic_character_details(character: Character):
+	"""Mostrar detalles básicos si no hay escena"""
+	var details_text = character.character_name + " Details\n\n"
+	details_text += "Level: " + str(character.level) + "\n"
+	details_text += "Element: " + character.get_element_name() + "\n"
+	details_text += "Rarity: " + Character.Rarity.keys()[character.rarity] + "\n"
+	details_text += "Power: " + str(_calculate_character_power(character)) + "\n\n"
+	details_text += "HP: " + str(character.max_hp) + "\n"
+	details_text += "Attack: " + str(character.attack) + "\n"
+	details_text += "Defense: " + str(character.defense) + "\n"
+	details_text += "Speed: " + str(character.speed) + "\n"
+	
+	var popup = AcceptDialog.new()
+	popup.dialog_text = details_text
+	popup.title = character.character_name
+	add_child(popup)
+	popup.popup_centered()
+	popup.confirmed.connect(func(): popup.queue_free())
+
+func _on_character_detail_back():
+	"""Manejar regreso desde pantalla de detalles"""
+	visible = true
+	# Refrescar inventario por si el personaje cambió
+	_populate_inventory()
+
+func _on_character_updated(character: Character):
+	"""Manejar actualización de personaje"""
+	print("Character updated: ", character.character_name)
+	# El personaje se actualizó, refrescar cuando regresemos
+	# No hacer nada aquí, esperaremos al back
 
 func _on_back_pressed():
 	back_pressed.emit()

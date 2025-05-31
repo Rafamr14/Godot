@@ -257,7 +257,13 @@ func _load_inventory_scene():
 	if scene.has_signal("back_pressed"):
 		scene.back_pressed.connect(func(): _navigate_to_screen("main_menu"))
 	if scene.has_signal("character_selected"):
-		scene.character_selected.connect(_on_character_selected)
+		scene.character_selected.connect(_on_inventory_character_selected)
+
+func _on_inventory_character_selected(character: Character):
+	"""Manejar selección de personaje desde inventario"""
+	print("Character selected from inventory: ", character.character_name)
+	# El InventoryUIController maneja esto internamente ahora
+	# No necesitamos hacer nada aquí
 
 func _load_battle_scene():
 	var scene = load("res://scenes/BattleUI.tscn").instantiate()
@@ -296,11 +302,6 @@ func _on_stage_selected(chapter_id: int, stage_id: int):
 		battle_system.start_battle(game_manager.player_team, stage_data.enemies)
 	
 	_navigate_to_screen("battle")
-
-func _on_character_selected(character: Character):
-	# Mostrar detalles del personaje
-	print("Character selected: ", character.character_name)
-	# TODO: Implementar pantalla de detalles si es necesario
 
 # ==== UI UPDATES ====
 func _update_main_menu_display():
