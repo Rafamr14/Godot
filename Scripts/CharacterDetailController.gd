@@ -50,7 +50,6 @@ func _ready():
 	_setup_animations()
 	print("CharacterDetailController: Listo!")
 
-# ==== INICIALIZACIÓN ====
 func _initialize_systems():
 	await get_tree().process_frame
 	
@@ -95,7 +94,6 @@ func _setup_animations():
 	var tween = create_tween()
 	tween.tween_property(self, "modulate:a", 1.0, 0.3)
 
-# ==== FUNCIONES PRINCIPALES ====
 func show_character(character: Character):
 	"""Mostrar los detalles de un personaje"""
 	if not character:
@@ -133,8 +131,8 @@ func _update_header_info():
 		rarity_label.modulate = current_character.get_rarity_color()
 	
 	if class_label:
-		var class_name = CharacterTemplate.CharacterClass.keys()[current_character.character_class]
-		class_label.text = class_name.capitalize()
+		var character_class_name = CharacterTemplate.CharacterClass.keys()[current_character.character_class]
+		class_label.text = character_class_name.capitalize()
 
 func _update_character_splash():
 	"""Actualizar el splash del personaje"""
@@ -247,12 +245,12 @@ func _create_skill_item(skill: Skill, index: int) -> Control:
 	item.add_child(bg)
 	
 	# Nombre del skill
-	var name_label = Label.new()
-	name_label.text = skill.skill_name
-	name_label.position = Vector2(10, 5)
-	name_label.add_theme_font_size_override("font_size", 16)
-	name_label.modulate = Color.WHITE
-	item.add_child(name_label)
+	var name_label_local = Label.new()
+	name_label_local.text = skill.skill_name
+	name_label_local.position = Vector2(10, 5)
+	name_label_local.add_theme_font_size_override("font_size", 16)
+	name_label_local.modulate = Color.WHITE
+	item.add_child(name_label_local)
 	
 	# Descripción
 	var desc_label = Label.new()
@@ -272,12 +270,12 @@ func _create_skill_item(skill: Skill, index: int) -> Control:
 	item.add_child(cooldown_label)
 	
 	# Elemento
-	var element_label = Label.new()
-	element_label.text = Character.Element.keys()[skill.element]
-	element_label.position = Vector2(300, 25)
-	element_label.add_theme_font_size_override("font_size", 12)
-	element_label.modulate = _get_element_color(skill.element)
-	item.add_child(element_label)
+	var element_label_local = Label.new()
+	element_label_local.text = Character.Element.keys()[skill.element]
+	element_label_local.position = Vector2(300, 25)
+	element_label_local.add_theme_font_size_override("font_size", 12)
+	element_label_local.modulate = _get_element_color(skill.element)
+	item.add_child(element_label_local)
 	
 	# Número del skill
 	var number_label = Label.new()
@@ -330,7 +328,6 @@ func _calculate_character_power(character: Character) -> int:
 	"""Calcular poder del personaje"""
 	return character.max_hp + character.attack * 5 + character.defense * 3 + character.speed * 2
 
-# ==== ANIMACIONES ====
 func _animate_character_entrance():
 	"""Animar entrada del personaje"""
 	if not character_splash:
@@ -343,7 +340,6 @@ func _animate_character_entrance():
 	tween.tween_property(character_splash, "scale", Vector2(1.02, 1.02), 0.1)
 	tween.tween_property(character_splash, "scale", Vector2(1.0, 1.0), 0.1)
 
-# ==== EVENT HANDLERS ====
 func _on_back_pressed():
 	"""Manejar botón de back"""
 	print("Back button pressed")
@@ -405,7 +401,6 @@ func _on_skills_pressed():
 	"""Manejar botón de enhance skills (futuro)"""
 	_show_coming_soon_message("Skill Enhancement")
 
-# ==== UTILITY FUNCTIONS ====
 func _show_insufficient_funds_message():
 	"""Mostrar mensaje de fondos insuficientes"""
 	var popup = AcceptDialog.new()
@@ -415,7 +410,15 @@ func _show_insufficient_funds_message():
 	popup.popup_centered()
 	popup.confirmed.connect(func(): popup.queue_free())
 
-# ==== FUNCIONES PÚBLICAS ====
+func _show_coming_soon_message(feature_name: String):
+	"""Mostrar mensaje de próximamente"""
+	var popup = AcceptDialog.new()
+	popup.dialog_text = feature_name + " coming soon!\nThis feature will be available in a future update."
+	popup.title = "Coming Soon"
+	add_child(popup)
+	popup.popup_centered()
+	popup.confirmed.connect(func(): popup.queue_free())
+
 func refresh_character_display():
 	"""Refrescar display del personaje"""
 	if current_character:
@@ -427,13 +430,4 @@ func get_current_character() -> Character:
 
 func set_character_and_show(character: Character):
 	"""Función pública para mostrar personaje"""
-	show_character(character)_centered()
-	popup.confirmed.connect(func(): popup.queue_free())
-
-func _show_coming_soon_message(feature_name: String):
-	"""Mostrar mensaje de próximamente"""
-	var popup = AcceptDialog.new()
-	popup.dialog_text = feature_name + " coming soon!\nThis feature will be available in a future update."
-	popup.title = "Coming Soon"
-	add_child(popup)
-	popup.popup
+	show_character(character)

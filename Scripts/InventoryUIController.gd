@@ -1,4 +1,4 @@
-# ==== INVENTORY UI CONTROLLER - SOLO DATA/CHARACTERS ====
+# ==== INVENTORY UI CONTROLLER - NAVEGACIÓN ARREGLADA ====
 extends Control
 
 # Referencias UI
@@ -19,6 +19,10 @@ var current_sort: String = "power"
 var character_list: VBoxContainer
 var filter_buttons: Array[Button] = []
 var sort_buttons: Array[Button] = []
+
+# Control de navegación
+var is_showing_details: bool = false
+var current_detail_scene: Control = null
 
 # Señales
 signal back_pressed()
@@ -347,16 +351,14 @@ func _create_sort_buttons():
 	_update_sort_button_states()
 
 func _apply_filter(filter: String):
-	if current_filter != filter:
-		current_filter = filter
-		_update_filter_button_states()
-		_populate_inventory()
+	current_filter = filter
+	_update_filter_button_states()
+	_populate_inventory()
 
 func _apply_sort(sort: String):
-	if current_sort != sort:
-		current_sort = sort
-		_update_sort_button_states()
-		_populate_inventory()
+	current_sort = sort
+	_update_sort_button_states()
+	_populate_inventory()
 
 func _update_filter_button_states():
 	var filters = ["all", "water", "fire", "earth", "radiant", "void"]
@@ -493,97 +495,110 @@ func _setup_connections():
 			back_button.pressed.connect(_on_back_pressed)
 
 func _on_character_selected(character: Character):
+	# Evitar múltiples clicks si ya estamos mostrando detalles
+	if is_showing_details:
+		print("Ya mostrando detalles, ignorando click")
+		return
+	
 	print("Character selected: ", character.character_name)
 	character_selected.emit(character)
 	
-	# Cargar pantalla de detalles del personaje
+	# Mostrar pantalla de detalles
 	_show_character_details(character)
 
 func _show_character_details(character: Character):
-	"""Mostrar pantalla de detalles del personaje"""
-	var detail_scene_path = "res://scenes/CharacterDetailUI.tscn"
+	"""Mostrar pantalla de detalles del personaje - MÉTODO MEJORADO"""
 	
-	# Verificar si existe la escena
-	if not ResourceLoader.exists(detail_scene_path):
-		print("CharacterDetailUI.tscn no encontrada, creando pantalla básica...")
-		_show_basic_character_details(character)
+	# Marcar que estamos mostrando detalles
+	is_showing_details = true
+	
+	# Crear escena de detalles programáticamente usando CharacterDetailSceneCreator
+	current_detail_scene = _create_character_detail_scene()
+	
+	if not current_detail_scene:
+		print("Error: No se pudo crear la escena de detalles")
+		is_showing_details = false
 		return
 	
-	# Cargar escena de detalles
-	var detail_scene = load(detail_scene_path)
-	if detail_scene:
-		var detail_ui = detail_scene.instantiate()
-		get_tree().current_scene.add_child(detail_ui)
-		
-		# Configurar personaje
-		if detail_ui.has_method("show_character"):
-			detail_ui.show_character(character)
-		elif detail_ui.has_method("set_character_and_show"):
-			detail_ui.set_character_and_show(character)
-		
-		# Ocultar inventario temporalmente
-		visible = false
-		
-		# Conectar señal de back
-		if detail_ui.has_signal("back_pressed"):
-			detail_ui.back_pressed.connect(_on_character_detail_back)
-		
-		# Conectar señal de actualización
-		if detail_ui.has_signal("character_updated"):
-			detail_ui.character_updated.connect(_on_character_updated)
-	else:
-		print("Error loading CharacterDetailUI.tscn")
-
-func _show_basic_character_details(character: Character):
-	"""Mostrar detalles básicos si no hay escena"""
-	var details_text = character.character_name + " Details\n\n"
-	details_text += "Level: " + str(character.level) + "\n"
-	details_text += "Element: " + character.get_element_name() + "\n"
-	details_text += "Rarity: " + Character.Rarity.keys()[character.rarity] + "\n"
-	details_text += "Power: " + str(_calculate_character_power(character)) + "\n\n"
-	details_text += "HP: " + str(character.max_hp) + "\n"
-	details_text += "Attack: " + str(character.attack) + "\n"
-	details_text += "Defense: " + str(character.defense) + "\n"
-	details_text += "Speed: " + str(character.speed) + "\n"
+	# Agregar al árbol de escenas
+	get_tree().current_scene.add_child(current_detail_scene)
 	
-	var popup = AcceptDialog.new()
-	popup.dialog_text = details_text
-	popup.title = character.character_name
-	add_child(popup)
-	popup.popup_centered()
-	popup.confirmed.connect(func(): popup.queue_free())
+	# Configurar personaje
+	if current_detail_scene.has_method("show_character"):
+		current_detail_scene.show_character(character)
+	elif current_detail_scene.has_method("set_character_and_show"):
+		current_detail_scene.set_character_and_show(character)
+	
+	# Ocultar inventario temporalmente
+	visible = false
+	
+	# Conectar señal de back con cleanup
+	if current_detail_scene.has_signal("back_pressed"):
+		current_detail_scene.back_pressed.connect(_on_character_detail_back_safe)
+	
+	# Conectar señal de actualización
+	if current_detail_scene.has_signal("character_updated"):
+		current_detail_scene.character_updated.connect(_on_character_updated)
 
-func _on_character_detail_back():
-	"""Manejar regreso desde pantalla de detalles"""
+func _create_character_detail_scene() -> Control:
+	"""Crear escena de detalles usando CharacterDetailSceneCreator"""
+	var detail_scene = CharacterDetailSceneCreator.create_character_detail_scene()
+	return detail_scene
+
+func _on_character_detail_back_safe():
+	"""Manejar regreso desde pantalla de detalles de forma segura"""
+	print("Regresando desde detalles de personaje...")
+	
+	# Cleanup de la escena de detalles
+	if current_detail_scene:
+		# Desconectar señales para evitar llamadas múltiples
+		if current_detail_scene.has_signal("back_pressed"):
+			current_detail_scene.back_pressed.disconnect(_on_character_detail_back_safe)
+		if current_detail_scene.has_signal("character_updated"):
+			current_detail_scene.character_updated.disconnect(_on_character_updated)
+		
+		# Remover de la escena
+		current_detail_scene.queue_free()
+		current_detail_scene = null
+	
+	# Restaurar estado
+	is_showing_details = false
 	visible = true
+	
 	# Refrescar inventario por si el personaje cambió
+	await get_tree().process_frame  # Esperar un frame antes de refrescar
 	_populate_inventory()
 
 func _on_character_updated(character: Character):
 	"""Manejar actualización de personaje"""
 	print("Character updated: ", character.character_name)
-	# El personaje se actualizó, refrescar cuando regresemos
-	# No hacer nada aquí, esperaremos al back
+	# El personaje se actualizó, se refrescará cuando regresemos
 
 func _on_back_pressed():
-	back_pressed.emit()
+	# Solo procesar si no estamos mostrando detalles
+	if not is_showing_details:
+		back_pressed.emit()
 
 # ==== FUNCIONES PÚBLICAS ====
 func refresh_inventory():
 	"""Función pública para refrescar el inventario desde otros sistemas"""
-	_load_characters_from_data()
+	if not is_showing_details:  # Solo refrescar si no estamos en detalles
+		_load_characters_from_data()
 
 func reload_from_data():
 	"""Función pública para recargar desde Data/Characters"""
-	_load_characters_from_data()
+	if not is_showing_details:  # Solo recargar si no estamos en detalles
+		_load_characters_from_data()
 
 func set_filter(filter: String):
 	"""Función pública para cambiar filtro desde fuera"""
-	_apply_filter(filter)
+	if not is_showing_details:
+		_apply_filter(filter)
 
 func set_sort(sort: String):
 	"""Función pública para cambiar ordenamiento desde fuera"""
-	_apply_sort(sort)
+	if not is_showing_details:
+		_apply_sort(sort)
 
 # ==== FUNCIÓN UTILITARIA PARA CREAR CARPETAS ====
 func ensure_data_characters_folder():
@@ -597,3 +612,10 @@ func ensure_data_characters_folder():
 			print("Created Data/Characters folder")
 		else:
 			print("Error: Could not create Data/Characters folder")
+
+# ==== CLEANUP AL SALIR ====
+func _exit_tree():
+	"""Cleanup al salir"""
+	if current_detail_scene:
+		current_detail_scene.queue_free()
+	is_showing_details = false
