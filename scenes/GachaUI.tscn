@@ -1,4 +1,6 @@
-[gd_scene format=3 uid="uid://dburo4nn80r7x"]
+[gd_scene load_steps=2 format=3 uid="uid://dburo4nn80r7x"]
+
+[ext_resource type="Script" uid="uid://bbwlmj08k2kd4" path="res://Scripts/GachaUIController.gd" id="1_gacha"]
 
 [node name="GachaUI" type="Control"]
 layout_mode = 3
@@ -7,44 +9,123 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_gacha")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
-layout_mode = 0
-offset_left = 50.0
-offset_top = 50.0
-offset_right = 450.0
-offset_bottom = 500.0
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -300.0
+offset_top = -300.0
+offset_right = 300.0
+offset_bottom = 300.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="TitleLabel" type="Label" parent="VBoxContainer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 24
+theme_override_font_sizes/font_size = 32
 text = "Hero Summon"
+horizontal_alignment = 1
 
-[node name="CurrencyLabel" type="Label" parent="VBoxContainer"]
+[node name="BannerDisplay" type="Control" parent="VBoxContainer"]
+custom_minimum_size = Vector2(0, 200)
 layout_mode = 2
-text = "Gold: 2000"
 
-[node name="PityLabel" type="Label" parent="VBoxContainer"]
-layout_mode = 2
-text = "Pity: 0/90"
+[node name="BannerImage" type="ColorRect" parent="VBoxContainer/BannerDisplay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = -50.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.2, 0.4, 0.8, 1)
 
-[node name="SinglePullButton" type="Button" parent="VBoxContainer"]
-custom_minimum_size = Vector2(200, 50)
-layout_mode = 2
-text = "Single Summon (100)"
+[node name="BannerTitle" type="Label" parent="VBoxContainer/BannerDisplay"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -100.0
+offset_top = -40.0
+offset_right = 100.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_font_sizes/font_size = 20
+text = "Standard Banner"
+horizontal_alignment = 1
 
-[node name="TenPullButton" type="Button" parent="VBoxContainer"]
-custom_minimum_size = Vector2(200, 50)
+[node name="BannerNavigation" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
-text = "10x Summon (900)"
+alignment = 1
 
-[node name="ResultLabel" type="Label" parent="VBoxContainer"]
-custom_minimum_size = Vector2(300, 200)
+[node name="PrevButton" type="Button" parent="VBoxContainer/BannerNavigation"]
+custom_minimum_size = Vector2(100, 40)
 layout_mode = 2
-text = "Results will appear here"
+text = "◀ Previous"
+
+[node name="BannerCounter" type="Label" parent="VBoxContainer/BannerNavigation"]
+custom_minimum_size = Vector2(100, 40)
+layout_mode = 2
+text = "1 / 3"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="NextButton" type="Button" parent="VBoxContainer/BannerNavigation"]
+custom_minimum_size = Vector2(100, 40)
+layout_mode = 2
+text = "Next ▶"
+
+[node name="BannerInfo" type="VBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="Description" type="Label" parent="VBoxContainer/BannerInfo"]
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+text = "Standard banner with all available heroes"
+horizontal_alignment = 1
 autowrap_mode = 3
+
+[node name="PityInfo" type="Label" parent="VBoxContainer/BannerInfo"]
+layout_mode = 2
+text = "Pity: 0 / 90"
+horizontal_alignment = 1
+
+[node name="FeaturedInfo" type="Label" parent="VBoxContainer/BannerInfo"]
+layout_mode = 2
+text = "Featured: None"
+horizontal_alignment = 1
+
+[node name="CurrencyDisplay" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Gold: 2000"
+horizontal_alignment = 1
+
+[node name="PullButtons" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="SinglePullButton" type="Button" parent="VBoxContainer/PullButtons"]
+custom_minimum_size = Vector2(150, 60)
+layout_mode = 2
+text = "Single Pull
+(100 Gold)"
+
+[node name="TenPullButton" type="Button" parent="VBoxContainer/PullButtons"]
+custom_minimum_size = Vector2(150, 60)
+layout_mode = 2
+text = "10x Pull
+(900 Gold)"
 
 [node name="BackButton" type="Button" parent="VBoxContainer"]
 custom_minimum_size = Vector2(100, 40)
 layout_mode = 2
+size_flags_horizontal = 4
 text = "Back"
