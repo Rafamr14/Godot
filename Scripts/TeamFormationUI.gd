@@ -1,33 +1,57 @@
-# ==== TEAM FORMATION UI COMPLETO Y AUTO-SUFICIENTE ====
+# ==== TEAM FORMATION UI - UPDATED FOR NEW SCENE ====
 extends Control
+
+# Referencias UI principales
+@onready var back_button = $BackButton
+
+# Left Panel
+@onready var title_label = $MainContainer/LeftPanel/HeaderLeft/TitleLabel
+@onready var stats_label = $MainContainer/LeftPanel/HeaderLeft/StatsLabel
+@onready var character_list = $MainContainer/LeftPanel/CharacterListContainer/CharacterScrollContainer/CharacterList
+
+# Filter buttons
+@onready var all_button = $MainContainer/LeftPanel/FilterSection/FilterButtons/AllButton
+@onready var water_button = $MainContainer/LeftPanel/FilterSection/FilterButtons/WaterButton
+@onready var fire_button = $MainContainer/LeftPanel/FilterSection/FilterButtons/FireButton
+@onready var earth_button = $MainContainer/LeftPanel/FilterSection/FilterButtons/EarthButton
+@onready var radiant_button = $MainContainer/LeftPanel/FilterSection/FilterButtons/RadiantButton
+@onready var void_button = $MainContainer/LeftPanel/FilterSection/FilterButtons/VoidButton
+
+# Sort buttons
+@onready var power_sort = $MainContainer/LeftPanel/SortSection/SortButtons/PowerSort
+@onready var level_sort = $MainContainer/LeftPanel/SortSection/SortButtons/LevelSort
+@onready var rarity_sort = $MainContainer/LeftPanel/SortSection/SortButtons/RaritySort
+@onready var name_sort = $MainContainer/LeftPanel/SortSection/SortButtons/NameSort
+
+# Right Panel
+@onready var team_stats_label = $MainContainer/RightPanel/HeaderRight/TeamStatsLabel
+@onready var team_slots = $MainContainer/RightPanel/TeamSlotsContainer/TeamSlots
+
+# Quick Actions
+@onready var clear_team_button = $MainContainer/RightPanel/QuickActions/ClearTeamButton
+@onready var auto_fill_button = $MainContainer/RightPanel/QuickActions/AutoFillButton
 
 # Sistemas (se buscan automáticamente)
 var character_menu_system: CharacterMenuSystem
 var game_manager: GameManager
 var main_controller: Control
 
-# Referencias UI (se crean dinámicamente)
-var character_list: Control
-var team_slots: Control
-var team_analysis: Label
-var filter_buttons: Control
-var back_button: Button
-
 # Estado interno
 var current_filter: String = "all"
+var current_sort: String = "power"
 var max_team_size: int = 4
+var filter_buttons: Array[Button] = []
+var sort_buttons: Array[Button] = []
 
 # Señales
 signal back_pressed()
 signal team_updated()
 
 func _ready():
-	print("TeamFormationUI: Inicializando sistema completo...")
+	print("TeamFormationUI: Inicializando sistema rediseñado...")
 	await _initialize_systems()
-	_create_ui_structure()
+	_setup_filter_and_sort_arrays()
 	_setup_connections()
-	_setup_filter_buttons()
-	_setup_team_slots()
 	_update_character_list()
 	_update_team_display()
 	print("TeamFormationUI: Listo para usar!")
@@ -79,201 +103,77 @@ func _find_node_by_script(script_name: String) -> Node:
 			return node
 	return null
 
-# ==== CREACIÓN DE UI ====
-func _create_ui_structure():
-	# Crear estructura principal
-	var main_hbox = HBoxContainer.new()
-	main_hbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	main_hbox.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	add_child(main_hbox)
-	
-	# Panel izquierdo (lista de personajes)
-	var left_panel = VBoxContainer.new()
-	left_panel.custom_minimum_size = Vector2(400, 500)
-	left_panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	main_hbox.add_child(left_panel)
-	
-	# Título del panel izquierdo
-	var left_title = Label.new()
-	left_title.text = "Available Heroes"
-	left_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	left_title.add_theme_font_size_override("font_size", 20)
-	left_panel.add_child(left_title)
-	
-	# Filtros
-	filter_buttons = HBoxContainer.new()
-	filter_buttons.alignment = BoxContainer.ALIGNMENT_CENTER
-	left_panel.add_child(filter_buttons)
-	
-	# Scroll container para personajes
-	var scroll = ScrollContainer.new()
-	scroll.custom_minimum_size = Vector2(380, 350)
-	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	left_panel.add_child(scroll)
-	
-	character_list = VBoxContainer.new()
-	character_list.name = "CharacterList"
-	scroll.add_child(character_list)
-	
-	# Panel derecho (equipo y análisis)
-	var right_panel = VBoxContainer.new()
-	right_panel.custom_minimum_size = Vector2(400, 500)
-	right_panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	main_hbox.add_child(right_panel)
-	
-	# Título del panel derecho
-	var right_title = Label.new()
-	right_title.text = "Current Team"
-	right_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	right_title.add_theme_font_size_override("font_size", 20)
-	right_panel.add_child(right_title)
-	
-	# Slots del equipo
-	team_slots = VBoxContainer.new()
-	team_slots.name = "TeamSlots"
-	right_panel.add_child(team_slots)
-	
-	# Análisis del equipo
-	var analysis_label = Label.new()
-	analysis_label.text = "Team Analysis:"
-	analysis_label.add_theme_font_size_override("font_size", 16)
-	right_panel.add_child(analysis_label)
-	
-	team_analysis = Label.new()
-	team_analysis.custom_minimum_size = Vector2(380, 200)
-	team_analysis.text = "Select heroes to analyze team composition"
-	team_analysis.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	team_analysis.vertical_alignment = VERTICAL_ALIGNMENT_TOP
-	right_panel.add_child(team_analysis)
-	
-	# Botón de back
-	back_button = Button.new()
-	back_button.text = "Back to Main Menu"
-	back_button.custom_minimum_size = Vector2(200, 50)
-	back_button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	right_panel.add_child(back_button)
+func _setup_filter_and_sort_arrays():
+	"""Configurar arrays de botones para fácil manejo"""
+	filter_buttons = [all_button, water_button, fire_button, earth_button, radiant_button, void_button]
+	sort_buttons = [power_sort, level_sort, rarity_sort, name_sort]
 
-# ==== SETUP DE FILTROS ====
-func _setup_filter_buttons():
-	if not filter_buttons:
-		return
+# ==== SETUP DE CONEXIONES ====
+func _setup_connections():
+	# Back button
+	if back_button:
+		back_button.pressed.connect(_on_back_pressed)
 	
-	var filters = ["All", "Water", "Fire", "Earth", "Radiant", "Void"]
+	# Filter buttons
+	if all_button:
+		all_button.pressed.connect(func(): _apply_filter("all"))
+	if water_button:
+		water_button.pressed.connect(func(): _apply_filter("water"))
+	if fire_button:
+		fire_button.pressed.connect(func(): _apply_filter("fire"))
+	if earth_button:
+		earth_button.pressed.connect(func(): _apply_filter("earth"))
+	if radiant_button:
+		radiant_button.pressed.connect(func(): _apply_filter("radiant"))
+	if void_button:
+		void_button.pressed.connect(func(): _apply_filter("void"))
 	
-	for filter_name in filters:
-		var button = Button.new()
-		button.text = filter_name
-		button.custom_minimum_size = Vector2(60, 30)
-		button.pressed.connect(func(): _apply_filter(filter_name.to_lower()))
-		filter_buttons.add_child(button)
+	# Sort buttons
+	if power_sort:
+		power_sort.pressed.connect(func(): _apply_sort("power"))
+	if level_sort:
+		level_sort.pressed.connect(func(): _apply_sort("level"))
+	if rarity_sort:
+		rarity_sort.pressed.connect(func(): _apply_sort("rarity"))
+	if name_sort:
+		name_sort.pressed.connect(func(): _apply_sort("name"))
 	
-	_update_filter_button_states()
+	# Quick action buttons
+	if clear_team_button:
+		clear_team_button.pressed.connect(_on_clear_team)
+	if auto_fill_button:
+		auto_fill_button.pressed.connect(_on_auto_fill)
+	
+	# Conectar con character_menu_system si tiene señales
+	if character_menu_system and character_menu_system.has_signal("team_formation_changed"):
+		character_menu_system.team_formation_changed.connect(_on_team_formation_changed)
+	
+	_update_button_states()
 
+# ==== FILTROS Y ORDENAMIENTO ====
 func _apply_filter(filter: String):
 	current_filter = filter
-	_update_filter_button_states()
+	_update_button_states()
 	_update_character_list()
 
-func _update_filter_button_states():
-	if not filter_buttons:
-		return
-		
+func _apply_sort(sort: String):
+	current_sort = sort
+	_update_button_states()
+	_update_character_list()
+
+func _update_button_states():
+	"""Actualizar estado de botones de filtro y ordenamiento"""
+	# Filter buttons
 	var filters = ["all", "water", "fire", "earth", "radiant", "void"]
-	var buttons = filter_buttons.get_children()
+	for i in range(filter_buttons.size()):
+		if i < filters.size() and filter_buttons[i]:
+			filter_buttons[i].disabled = (current_filter == filters[i])
 	
-	for i in range(buttons.size()):
-		if i < filters.size():
-			buttons[i].disabled = (current_filter == filters[i])
-
-# ==== SETUP DE TEAM SLOTS ====
-func _setup_team_slots():
-	if not team_slots:
-		return
-	
-	# Limpiar slots existentes
-	for child in team_slots.get_children():
-		child.queue_free()
-	
-	await get_tree().process_frame
-	
-	# Crear slots del equipo
-	for i in range(max_team_size):
-		var slot = _create_team_slot(i)
-		team_slots.add_child(slot)
-
-func _create_team_slot(index: int) -> Control:
-	var slot = Control.new()
-	slot.custom_minimum_size = Vector2(380, 70)
-	slot.name = "Slot" + str(index)
-	
-	# Background del slot
-	var bg = ColorRect.new()
-	bg.size = Vector2(380, 70)
-	bg.color = Color(0.2, 0.2, 0.2, 0.8)
-	slot.add_child(bg)
-	
-	# Borde
-	var border = ColorRect.new()
-	border.size = Vector2(376, 66)
-	border.position = Vector2(2, 2)
-	border.color = Color(0.5, 0.5, 0.5, 1.0)
-	slot.add_child(border)
-	
-	# Fondo interno
-	var inner_bg = ColorRect.new()
-	inner_bg.size = Vector2(372, 62)
-	inner_bg.position = Vector2(4, 4)
-	inner_bg.color = Color(0.1, 0.1, 0.1, 1.0)
-	slot.add_child(inner_bg)
-	
-	# Label del slot cuando está vacío
-	var slot_label = Label.new()
-	slot_label.text = "Slot " + str(index + 1) + " - Empty"
-	slot_label.position = Vector2(10, 25)
-	slot_label.add_theme_font_size_override("font_size", 14)
-	slot.add_child(slot_label)
-	
-	# Información del personaje (inicialmente oculta)
-	var character_info = Control.new()
-	character_info.name = "CharacterInfo"
-	character_info.visible = false
-	slot.add_child(character_info)
-	
-	var name_label = Label.new()
-	name_label.name = "Name"
-	name_label.position = Vector2(10, 10)
-	name_label.add_theme_font_size_override("font_size", 16)
-	character_info.add_child(name_label)
-	
-	var level_label = Label.new()
-	level_label.name = "Level"
-	level_label.position = Vector2(200, 10)
-	level_label.add_theme_font_size_override("font_size", 14)
-	character_info.add_child(level_label)
-	
-	var element_label = Label.new()
-	element_label.name = "Element"
-	element_label.position = Vector2(280, 10)
-	element_label.add_theme_font_size_override("font_size", 14)
-	character_info.add_child(element_label)
-	
-	var stats_label = Label.new()
-	stats_label.name = "Stats"
-	stats_label.position = Vector2(10, 35)
-	stats_label.add_theme_font_size_override("font_size", 12)
-	character_info.add_child(stats_label)
-	
-	var remove_label = Label.new()
-	remove_label.text = "Right-click to remove"
-	remove_label.position = Vector2(280, 35)
-	remove_label.add_theme_font_size_override("font_size", 10)
-	remove_label.modulate = Color.GRAY
-	character_info.add_child(remove_label)
-	
-	# Input para remover personajes
-	slot.gui_input.connect(func(event): _on_team_slot_input(event, index))
-	
-	return slot
+	# Sort buttons
+	var sorts = ["power", "level", "rarity", "name"]
+	for i in range(sort_buttons.size()):
+		if i < sorts.size() and sort_buttons[i]:
+			sort_buttons[i].disabled = (current_sort == sorts[i])
 
 # ==== ACTUALIZACIÓN DE LISTAS ====
 func _update_character_list():
@@ -286,13 +186,26 @@ func _update_character_list():
 	
 	await get_tree().process_frame
 	
-	# Obtener personajes filtrados
+	# Obtener personajes filtrados (solo los que NO están en el equipo)
 	var characters = _get_filtered_characters()
+	var available_characters = _get_available_characters(characters)
+	var sorted_characters = _sort_characters(available_characters)
 	
-	# Crear cards para cada personaje
-	for character in characters:
+	# Actualizar stats
+	_update_stats_display(sorted_characters)
+	
+	# Crear cards para cada personaje disponible
+	for character in sorted_characters:
 		var card = _create_character_card(character)
-		character_list.add_child(card)
+		if card:  # Solo agregar si la card no es null
+			character_list.add_child(card)
+
+func _get_available_characters(characters: Array[Character]) -> Array[Character]:
+	"""Filtrar personajes que NO están en el equipo actual"""
+	if not character_menu_system:
+		return characters
+	
+	return characters.filter(func(char): return char not in character_menu_system.current_team)
 
 func _get_filtered_characters() -> Array[Character]:
 	if not game_manager:
@@ -314,27 +227,54 @@ func _get_filtered_characters() -> Array[Character]:
 		_:
 			return characters
 
+func _sort_characters(characters: Array[Character]) -> Array[Character]:
+	var sorted_chars = characters.duplicate()
+	
+	match current_sort:
+		"power":
+			sorted_chars.sort_custom(func(a, b): return _calculate_character_power(a) > _calculate_character_power(b))
+		"level":
+			sorted_chars.sort_custom(func(a, b): return a.level > b.level)
+		"rarity":
+			sorted_chars.sort_custom(func(a, b): return a.rarity > b.rarity)
+		"name":
+			sorted_chars.sort_custom(func(a, b): return a.character_name < b.character_name)
+	
+	return sorted_chars
+
+func _update_stats_display(available_characters: Array[Character]):
+	"""Actualizar estadísticas del panel izquierdo"""
+	if not stats_label:
+		return
+	
+	var total_heroes = game_manager.player_inventory.size() if game_manager else 0
+	var available_heroes = available_characters.size()
+	var current_team_size = character_menu_system.current_team.size() if character_menu_system else 0
+	
+	stats_label.text = "Total Heroes: " + str(total_heroes) + " | Available: " + str(available_heroes) + " | In Team: " + str(current_team_size)
+
 func _create_character_card(character: Character) -> Control:
 	var card = Button.new()
-	card.custom_minimum_size = Vector2(360, 60)
+	card.custom_minimum_size = Vector2(480, 70)
+	card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	
-	# Texto del personaje
+	# Verificar si está en el equipo ANTES de crear el texto
+	var is_in_team = character_menu_system and character in character_menu_system.current_team
+	
+	# Crear texto detallado del personaje
 	var card_text = character.character_name + " Lv." + str(character.level) + "\n"
-	card_text += character.get_element_name() + " | " + Character.Rarity.keys()[character.rarity]
-	card_text += " | Power: " + str(_calculate_character_power(character))
+	card_text += character.get_element_name() + " | " + Character.Rarity.keys()[character.rarity] + " | Power: " + str(_calculate_character_power(character))
 	
-	# Indicar si ya está en el equipo
-	if character_menu_system and character in character_menu_system.current_team:
-		card_text += " ✓"
-		card.disabled = true
-		card.modulate = Color(0.7, 0.7, 0.7, 1.0)
+	# Solo mostrar personajes que NO están en el equipo
+	if is_in_team:
+		# NO crear la card para personajes que ya están en el equipo
+		card.queue_free()
+		return null
 	else:
-		card.modulate = character.get_element_color()
-	
-	card.text = card_text
-	
-	# Conectar para agregar al equipo
-	if not card.disabled:
+		card.modulate = character.get_rarity_color()
+		card.text = card_text
+		
+		# Conexión para agregar al equipo
 		card.pressed.connect(func(): _add_character_to_team(character))
 	
 	return card
@@ -348,7 +288,6 @@ func _add_character_to_team(character: Character):
 		print("Added ", character.character_name, " to team")
 		_update_character_list()  # Refrescar para mostrar que está en equipo
 		_update_team_display()
-		_update_team_analysis()
 		team_updated.emit()
 	else:
 		_show_message("Cannot add character to team (team full or already in team)")
@@ -361,10 +300,88 @@ func _remove_character_from_team(character: Character):
 		print("Removed ", character.character_name, " from team")
 		_update_character_list()  # Refrescar para mostrar disponible
 		_update_team_display()
-		_update_team_analysis()
 		team_updated.emit()
 
+# ==== ACTUALIZACIÓN DE TEAM SLOTS ====
+func _update_team_display():
+	if not team_slots or not character_menu_system:
+		return
+		
+	var current_team = character_menu_system.current_team
+	
+	# Actualizar cada slot (TeamSlot1, TeamSlot2, etc.)
+	for i in range(max_team_size):
+		var slot_name = "TeamSlot" + str(i + 1)
+		var slot = team_slots.get_node_or_null(slot_name)
+		
+		if not slot:
+			continue
+		
+		var slot_label = slot.get_node_or_null("SlotLabel")
+		var character_info = slot.get_node_or_null("CharacterInfo")
+		
+		if i < current_team.size():
+			# Slot ocupado
+			var character = current_team[i]
+			
+			if slot_label:
+				slot_label.visible = false
+			
+			if character_info:
+				character_info.visible = true
+				_update_character_info_in_slot(character_info, character)
+				
+				# Setup click para remover
+				if not slot.gui_input.is_connected(_on_team_slot_input):
+					slot.gui_input.connect(func(event): _on_team_slot_input(event, i))
+		else:
+			# Slot vacío
+			if slot_label:
+				slot_label.visible = true
+				slot_label.text = "Slot " + str(i + 1) + " - Empty"
+			
+			if character_info:
+				character_info.visible = false
+	
+	# Actualizar stats del equipo
+	_update_team_stats()
+
+func _update_character_info_in_slot(character_info: Control, character: Character):
+	"""Actualizar información del personaje en el slot"""
+	var name_label = character_info.get_node_or_null("CharacterName")
+	var level_label = character_info.get_node_or_null("CharacterLevel")
+	var element_label = character_info.get_node_or_null("CharacterElement")
+	var power_label = character_info.get_node_or_null("CharacterPower")
+	
+	if name_label:
+		name_label.text = character.character_name
+		name_label.modulate = character.get_rarity_color()
+	
+	if level_label:
+		level_label.text = "Level " + str(character.level)
+	
+	if element_label:
+		element_label.text = character.get_element_name()
+		element_label.modulate = character.get_element_color()
+	
+	if power_label:
+		power_label.text = "Power: " + str(_calculate_character_power(character))
+
+func _update_team_stats():
+	"""Actualizar estadísticas del equipo"""
+	if not team_stats_label or not character_menu_system:
+		return
+	
+	var current_team = character_menu_system.current_team
+	var team_power = 0
+	
+	for character in current_team:
+		team_power += _calculate_character_power(character)
+	
+	team_stats_label.text = "Team Size: " + str(current_team.size()) + "/" + str(max_team_size) + " | Total Power: " + str(team_power)
+
 func _on_team_slot_input(event: InputEvent, slot_index: int):
+	"""Manejar input en slots del equipo"""
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_RIGHT:
 		# Click derecho para remover personaje
 		if not character_menu_system:
@@ -375,100 +392,41 @@ func _on_team_slot_input(event: InputEvent, slot_index: int):
 			var character = current_team[slot_index]
 			_remove_character_from_team(character)
 
-# ==== ACTUALIZACIÓN DE DISPLAYS ====
-func _update_team_display():
-	if not team_slots or not character_menu_system:
-		return
-		
-	var current_team = character_menu_system.current_team
-	var slots = team_slots.get_children()
-	
-	for i in range(max_team_size):
-		if i >= slots.size():
-			continue
-			
-		var slot = slots[i]
-		var character_info = slot.get_node_or_null("CharacterInfo")
-		var slot_label = slot.get_children().filter(func(child): return child is Label and child.name != "CharacterInfo")[0]
-		
-		if i < current_team.size():
-			# Slot ocupado
-			var character = current_team[i]
-			
-			if character_info:
-				character_info.visible = true
-				character_info.get_node("Name").text = character.character_name
-				character_info.get_node("Level").text = "Lv." + str(character.level)
-				character_info.get_node("Element").text = character.get_element_name()
-				character_info.get_node("Element").modulate = character.get_element_color()
-				
-				var stats_text = "HP:" + str(character.max_hp) + " ATK:" + str(character.attack) + " DEF:" + str(character.defense) + " SPD:" + str(character.speed)
-				character_info.get_node("Stats").text = stats_text
-			
-			if slot_label:
-				slot_label.visible = false
-		else:
-			# Slot vacío
-			if character_info:
-				character_info.visible = false
-			if slot_label:
-				slot_label.visible = true
-				slot_label.text = "Slot " + str(i + 1) + " - Empty"
+# ==== ANÁLISIS DEL EQUIPO ====
+# Team Analysis removido según requerimiento del usuario
 
-func _update_team_analysis():
-	if not team_analysis or not character_menu_system:
-		return
-		
-	var current_team = character_menu_system.current_team
-	
-	if current_team.is_empty():
-		team_analysis.text = "Select heroes to analyze team composition"
+# ==== ACCIONES RÁPIDAS ====
+func _on_clear_team():
+	"""Limpiar todo el equipo"""
+	if character_menu_system:
+		character_menu_system.clear_team()
+		_update_character_list()
+		_update_team_display()
+		team_updated.emit()
+
+func _on_auto_fill():
+	"""Auto-llenar equipo con mejores personajes disponibles"""
+	if not character_menu_system or not game_manager:
 		return
 	
-	var analysis = character_menu_system.analyze_team_composition(current_team)
+	# Obtener personajes disponibles ordenados por poder
+	var available_chars = game_manager.player_inventory.filter(
+		func(char): return char not in character_menu_system.current_team
+	)
+	available_chars.sort_custom(func(a, b): return _calculate_character_power(a) > _calculate_character_power(b))
 	
-	var analysis_text = "Team Power: " + str(analysis.total_power) + "\n"
-	analysis_text += "Team Size: " + str(current_team.size()) + "/" + str(max_team_size) + "\n\n"
+	# Llenar slots vacíos
+	var slots_to_fill = max_team_size - character_menu_system.current_team.size()
+	for i in range(min(slots_to_fill, available_chars.size())):
+		character_menu_system.add_to_team(available_chars[i])
 	
-	# Elementos
-	analysis_text += "Elements:\n"
-	for element in analysis.elements:
-		analysis_text += "  • " + element + ": " + str(analysis.elements[element]) + "\n"
-	
-	# Roles
-	analysis_text += "\nRoles:\n"
-	analysis_text += "  • DPS: " + str(analysis.roles.dps) + "\n"
-	analysis_text += "  • Tank: " + str(analysis.roles.tank) + "\n"
-	analysis_text += "  • Support: " + str(analysis.roles.support) + "\n"
-	
-	# Sinergias
-	if not analysis.synergies.is_empty():
-		analysis_text += "\nSynergies:\n"
-		for synergy in analysis.synergies:
-			analysis_text += "  ✓ " + synergy + "\n"
-	
-	# Debilidades
-	if not analysis.weaknesses.is_empty():
-		analysis_text += "\nWeaknesses:\n"
-		for weakness in analysis.weaknesses:
-			analysis_text += "  ⚠ " + weakness + "\n"
-	
-	team_analysis.text = analysis_text
+	_update_character_list()
+	_update_team_display()
+	team_updated.emit()
 
-# ==== CONEXIONES ====
-func _setup_connections():
-	if back_button:
-		if not back_button.pressed.is_connected(_on_back_pressed):
-			back_button.pressed.connect(_on_back_pressed)
-	
-	# Conectar con character_menu_system si tiene señales
-	if character_menu_system and character_menu_system.has_signal("team_formation_changed"):
-		if not character_menu_system.team_formation_changed.is_connected(_on_team_formation_changed):
-			character_menu_system.team_formation_changed.connect(_on_team_formation_changed)
-
+# ==== EVENT HANDLERS ====
 func _on_team_formation_changed(new_team: Array[Character]):
 	_update_team_display()
-	_update_team_analysis()
 	_update_character_list()
 	team_updated.emit()
 
@@ -491,7 +449,6 @@ func refresh_display():
 	"""Función pública para refrescar desde otros sistemas"""
 	_update_character_list()
 	_update_team_display()
-	_update_team_analysis()
 
 func get_current_team() -> Array[Character]:
 	"""Función pública para obtener el equipo actual"""

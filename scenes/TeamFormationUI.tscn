@@ -10,3 +10,722 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_spqy1")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.05, 0.05, 0.1, 1)
+
+[node name="BackButton" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = -70.0
+offset_right = 200.0
+offset_bottom = -20.0
+grow_vertical = 0
+theme_override_font_sizes/font_size = 18
+text = "← Back to Main"
+
+[node name="MainContainer" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = -80.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="LeftPanel" type="VBoxContainer" parent="MainContainer"]
+custom_minimum_size = Vector2(500, 0)
+layout_mode = 2
+
+[node name="HeaderLeft" type="VBoxContainer" parent="MainContainer/LeftPanel"]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="MainContainer/LeftPanel/HeaderLeft"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "Available Heroes"
+horizontal_alignment = 1
+
+[node name="StatsLabel" type="Label" parent="MainContainer/LeftPanel/HeaderLeft"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Total Heroes: 0 | Available: 0"
+horizontal_alignment = 1
+
+[node name="FilterSection" type="VBoxContainer" parent="MainContainer/LeftPanel"]
+layout_mode = 2
+
+[node name="FilterLabel" type="Label" parent="MainContainer/LeftPanel/FilterSection"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Filter by Element:"
+horizontal_alignment = 1
+
+[node name="FilterButtons" type="HBoxContainer" parent="MainContainer/LeftPanel/FilterSection"]
+layout_mode = 2
+alignment = 1
+
+[node name="AllButton" type="Button" parent="MainContainer/LeftPanel/FilterSection/FilterButtons"]
+custom_minimum_size = Vector2(70, 35)
+layout_mode = 2
+text = "All"
+
+[node name="WaterButton" type="Button" parent="MainContainer/LeftPanel/FilterSection/FilterButtons"]
+custom_minimum_size = Vector2(70, 35)
+layout_mode = 2
+text = "💧"
+
+[node name="FireButton" type="Button" parent="MainContainer/LeftPanel/FilterSection/FilterButtons"]
+custom_minimum_size = Vector2(70, 35)
+layout_mode = 2
+text = "🔥"
+
+[node name="EarthButton" type="Button" parent="MainContainer/LeftPanel/FilterSection/FilterButtons"]
+custom_minimum_size = Vector2(70, 35)
+layout_mode = 2
+text = "🌍"
+
+[node name="RadiantButton" type="Button" parent="MainContainer/LeftPanel/FilterSection/FilterButtons"]
+custom_minimum_size = Vector2(70, 35)
+layout_mode = 2
+text = "☀️"
+
+[node name="VoidButton" type="Button" parent="MainContainer/LeftPanel/FilterSection/FilterButtons"]
+custom_minimum_size = Vector2(70, 35)
+layout_mode = 2
+text = "🌙"
+
+[node name="SortSection" type="VBoxContainer" parent="MainContainer/LeftPanel"]
+layout_mode = 2
+
+[node name="SortLabel" type="Label" parent="MainContainer/LeftPanel/SortSection"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Sort by:"
+horizontal_alignment = 1
+
+[node name="SortButtons" type="HBoxContainer" parent="MainContainer/LeftPanel/SortSection"]
+layout_mode = 2
+alignment = 1
+
+[node name="PowerSort" type="Button" parent="MainContainer/LeftPanel/SortSection/SortButtons"]
+custom_minimum_size = Vector2(80, 35)
+layout_mode = 2
+text = "Power"
+
+[node name="LevelSort" type="Button" parent="MainContainer/LeftPanel/SortSection/SortButtons"]
+custom_minimum_size = Vector2(80, 35)
+layout_mode = 2
+text = "Level"
+
+[node name="RaritySort" type="Button" parent="MainContainer/LeftPanel/SortSection/SortButtons"]
+custom_minimum_size = Vector2(80, 35)
+layout_mode = 2
+text = "Rarity"
+
+[node name="NameSort" type="Button" parent="MainContainer/LeftPanel/SortSection/SortButtons"]
+custom_minimum_size = Vector2(80, 35)
+layout_mode = 2
+text = "Name"
+
+[node name="Separator1" type="HSeparator" parent="MainContainer/LeftPanel"]
+layout_mode = 2
+
+[node name="CharacterListContainer" type="VBoxContainer" parent="MainContainer/LeftPanel"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ListLabel" type="Label" parent="MainContainer/LeftPanel/CharacterListContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Hero Roster"
+
+[node name="CharacterScrollContainer" type="ScrollContainer" parent="MainContainer/LeftPanel/CharacterListContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="CharacterList" type="VBoxContainer" parent="MainContainer/LeftPanel/CharacterListContainer/CharacterScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="RightPanel" type="VBoxContainer" parent="MainContainer"]
+custom_minimum_size = Vector2(500, 0)
+layout_mode = 2
+
+[node name="HeaderRight" type="VBoxContainer" parent="MainContainer/RightPanel"]
+layout_mode = 2
+
+[node name="TeamTitleLabel" type="Label" parent="MainContainer/RightPanel/HeaderRight"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "Current Team"
+horizontal_alignment = 1
+
+[node name="TeamStatsLabel" type="Label" parent="MainContainer/RightPanel/HeaderRight"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Team Size: 0/4 | Total Power: 0"
+horizontal_alignment = 1
+
+[node name="Separator2" type="HSeparator" parent="MainContainer/RightPanel"]
+layout_mode = 2
+
+[node name="TeamSlotsContainer" type="VBoxContainer" parent="MainContainer/RightPanel"]
+layout_mode = 2
+
+[node name="TeamSlotsLabel" type="Label" parent="MainContainer/RightPanel/TeamSlotsContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Team Slots"
+
+[node name="TeamSlots" type="VBoxContainer" parent="MainContainer/RightPanel/TeamSlotsContainer"]
+layout_mode = 2
+
+[node name="TeamSlot1" type="Control" parent="MainContainer/RightPanel/TeamSlotsContainer/TeamSlots"]
+custom_minimum_size = Vector2(480, 80)
+layout_mode = 2
+
+[node name="SlotBackground" type="ColorRect" parent="MainContainer/RightPanel/TeamSlotsContainer/TeamSlots/TeamSlot1"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.15, 0.15, 0.2, 1)
+
+[node name="SlotBorder" type="ColorRect" parent="MainContainer/RightPanel/TeamSlotsContainer/TeamSlots/TeamSlot1"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_top = 2.0
+offset_right = -2.0
+offset_bottom = -2.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.1, 0.1, 0.15, 1)
+
+[node name="SlotLabel" type="Label" parent="MainContainer/RightPanel/TeamSlotsContainer/TeamSlots/TeamSlot1"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -50.0
+offset_top = -15.0
+offset_right = 50.0
+offset_bottom = 15.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 16
+text = "Slot 1 - Empty"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="CharacterInfo" type="Control" parent="MainContainer/RightPanel/TeamSlotsContainer/TeamSlots/TeamSlot1"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="CharacterName" type="Label" parent="MainContainer/RightPanel/TeamSlotsContainer/TeamSlots/TeamSlot1/CharacterInfo"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 15.0
+offset_top = -25.0
+offset_right = 200.0
+offset_bottom = -5.0
+grow_vertical = 2
+theme_override_font_sizes/font_size = 18
+text = "Character Name"
+vertical_alignment = 1
+
+[node name="CharacterLevel" type="Label" parent="MainContainer/RightPanel/TeamSlotsContainer/TeamSlots/TeamSlot1/CharacterInfo"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 15.0
+offset_top = 5.0
+offset_right = 100.0
+offset_bottom = 25.0
+grow_vertical = 2
+theme_override_font_sizes/font_size = 14
+text = "Level 1"
+vertical_alignment = 1
+
+[node name="CharacterElement" type="Label" parent="MainContainer/RightPanel/TeamSlotsContainer/TeamSlots/TeamSlot1/CharacterInfo"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 120.0
+offset_top = 5.0
+offset_right = 200.0
+offset_bottom = 25.0
+grow_vertical = 2
+theme_override_font_sizes/font_size = 14
+text = "Element"
+vertical_alignment = 1
+
+[node name="CharacterPower" type="Label" parent="MainContainer/RightPanel/TeamSlotsContainer/TeamSlots/TeamSlot1/CharacterInfo"]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -120.0
+offset_top = -10.0
+offset_right = -15.0
+offset_bottom = 10.0
+grow_horizontal = 0
+grow_vertical = 2
+theme_override_font_sizes/font_size = 16
+text = "Power: 0"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="RemoveHint" type="Label" parent="MainContainer/RightPanel/TeamSlotsContainer/TeamSlots/TeamSlot1/CharacterInfo"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -150.0
+offset_top = -20.0
+offset_right = -15.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_font_sizes/font_size = 10
+text = "Right-click to remove"
+horizontal_alignment = 2
+modulate = Color(0.7, 0.7, 0.7, 1)
+
+[node name="TeamSlot2" type="Control" parent="MainContainer/RightPanel/TeamSlotsContainer/TeamSlots"]
+custom_minimum_size = Vector2(480, 80)
+layout_mode = 2
+
+[node name="SlotBackground" type="ColorRect" parent="MainContainer/RightPanel/TeamSlotsContainer/TeamSlots/TeamSlot2"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.15, 0.15, 0.2, 1)
+
+[node name="SlotBorder" type="ColorRect" parent="MainContainer/RightPanel/TeamSlotsContainer/TeamSlots/TeamSlot2"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_top = 2.0
+offset_right = -2.0
+offset_bottom = -2.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.1, 0.1, 0.15, 1)
+
+[node name="SlotLabel" type="Label" parent="MainContainer/RightPanel/TeamSlotsContainer/TeamSlots/TeamSlot2"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -50.0
+offset_top = -15.0
+offset_right = 50.0
+offset_bottom = 15.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 16
+text = "Slot 2 - Empty"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="CharacterInfo" type="Control" parent="MainContainer/RightPanel/TeamSlotsContainer/TeamSlots/TeamSlot2"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="CharacterName" type="Label" parent="MainContainer/RightPanel/TeamSlotsContainer/TeamSlots/TeamSlot2/CharacterInfo"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 15.0
+offset_top = -25.0
+offset_right = 200.0
+offset_bottom = -5.0
+grow_vertical = 2
+theme_override_font_sizes/font_size = 18
+text = "Character Name"
+vertical_alignment = 1
+
+[node name="CharacterLevel" type="Label" parent="MainContainer/RightPanel/TeamSlotsContainer/TeamSlots/TeamSlot2/CharacterInfo"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 15.0
+offset_top = 5.0
+offset_right = 100.0
+offset_bottom = 25.0
+grow_vertical = 2
+theme_override_font_sizes/font_size = 14
+text = "Level 1"
+vertical_alignment = 1
+
+[node name="CharacterElement" type="Label" parent="MainContainer/RightPanel/TeamSlotsContainer/TeamSlots/TeamSlot2/CharacterInfo"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 120.0
+offset_top = 5.0
+offset_right = 200.0
+offset_bottom = 25.0
+grow_vertical = 2
+theme_override_font_sizes/font_size = 14
+text = "Element"
+vertical_alignment = 1
+
+[node name="CharacterPower" type="Label" parent="MainContainer/RightPanel/TeamSlotsContainer/TeamSlots/TeamSlot2/CharacterInfo"]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -120.0
+offset_top = -10.0
+offset_right = -15.0
+offset_bottom = 10.0
+grow_horizontal = 0
+grow_vertical = 2
+theme_override_font_sizes/font_size = 16
+text = "Power: 0"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="RemoveHint" type="Label" parent="MainContainer/RightPanel/TeamSlotsContainer/TeamSlots/TeamSlot2/CharacterInfo"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -150.0
+offset_top = -20.0
+offset_right = -15.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_font_sizes/font_size = 10
+text = "Right-click to remove"
+horizontal_alignment = 2
+modulate = Color(0.7, 0.7, 0.7, 1)
+
+[node name="TeamSlot3" type="Control" parent="MainContainer/RightPanel/TeamSlotsContainer/TeamSlots"]
+custom_minimum_size = Vector2(480, 80)
+layout_mode = 2
+
+[node name="SlotBackground" type="ColorRect" parent="MainContainer/RightPanel/TeamSlotsContainer/TeamSlots/TeamSlot3"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.15, 0.15, 0.2, 1)
+
+[node name="SlotBorder" type="ColorRect" parent="MainContainer/RightPanel/TeamSlotsContainer/TeamSlots/TeamSlot3"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_top = 2.0
+offset_right = -2.0
+offset_bottom = -2.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.1, 0.1, 0.15, 1)
+
+[node name="SlotLabel" type="Label" parent="MainContainer/RightPanel/TeamSlotsContainer/TeamSlots/TeamSlot3"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -50.0
+offset_top = -15.0
+offset_right = 50.0
+offset_bottom = 15.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 16
+text = "Slot 3 - Empty"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="CharacterInfo" type="Control" parent="MainContainer/RightPanel/TeamSlotsContainer/TeamSlots/TeamSlot3"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="CharacterName" type="Label" parent="MainContainer/RightPanel/TeamSlotsContainer/TeamSlots/TeamSlot3/CharacterInfo"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 15.0
+offset_top = -25.0
+offset_right = 200.0
+offset_bottom = -5.0
+grow_vertical = 2
+theme_override_font_sizes/font_size = 18
+text = "Character Name"
+vertical_alignment = 1
+
+[node name="CharacterLevel" type="Label" parent="MainContainer/RightPanel/TeamSlotsContainer/TeamSlots/TeamSlot3/CharacterInfo"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 15.0
+offset_top = 5.0
+offset_right = 100.0
+offset_bottom = 25.0
+grow_vertical = 2
+theme_override_font_sizes/font_size = 14
+text = "Level 1"
+vertical_alignment = 1
+
+[node name="CharacterElement" type="Label" parent="MainContainer/RightPanel/TeamSlotsContainer/TeamSlots/TeamSlot3/CharacterInfo"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 120.0
+offset_top = 5.0
+offset_right = 200.0
+offset_bottom = 25.0
+grow_vertical = 2
+theme_override_font_sizes/font_size = 14
+text = "Element"
+vertical_alignment = 1
+
+[node name="CharacterPower" type="Label" parent="MainContainer/RightPanel/TeamSlotsContainer/TeamSlots/TeamSlot3/CharacterInfo"]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -120.0
+offset_top = -10.0
+offset_right = -15.0
+offset_bottom = 10.0
+grow_horizontal = 0
+grow_vertical = 2
+theme_override_font_sizes/font_size = 16
+text = "Power: 0"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="RemoveHint" type="Label" parent="MainContainer/RightPanel/TeamSlotsContainer/TeamSlots/TeamSlot3/CharacterInfo"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -150.0
+offset_top = -20.0
+offset_right = -15.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_font_sizes/font_size = 10
+text = "Right-click to remove"
+horizontal_alignment = 2
+modulate = Color(0.7, 0.7, 0.7, 1)
+
+[node name="TeamSlot4" type="Control" parent="MainContainer/RightPanel/TeamSlotsContainer/TeamSlots"]
+custom_minimum_size = Vector2(480, 80)
+layout_mode = 2
+
+[node name="SlotBackground" type="ColorRect" parent="MainContainer/RightPanel/TeamSlotsContainer/TeamSlots/TeamSlot4"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.15, 0.15, 0.2, 1)
+
+[node name="SlotBorder" type="ColorRect" parent="MainContainer/RightPanel/TeamSlotsContainer/TeamSlots/TeamSlot4"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_top = 2.0
+offset_right = -2.0
+offset_bottom = -2.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.1, 0.1, 0.15, 1)
+
+[node name="SlotLabel" type="Label" parent="MainContainer/RightPanel/TeamSlotsContainer/TeamSlots/TeamSlot4"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -50.0
+offset_top = -15.0
+offset_right = 50.0
+offset_bottom = 15.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 16
+text = "Slot 4 - Empty"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="CharacterInfo" type="Control" parent="MainContainer/RightPanel/TeamSlotsContainer/TeamSlots/TeamSlot4"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="CharacterName" type="Label" parent="MainContainer/RightPanel/TeamSlotsContainer/TeamSlots/TeamSlot4/CharacterInfo"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 15.0
+offset_top = -25.0
+offset_right = 200.0
+offset_bottom = -5.0
+grow_vertical = 2
+theme_override_font_sizes/font_size = 18
+text = "Character Name"
+vertical_alignment = 1
+
+[node name="CharacterLevel" type="Label" parent="MainContainer/RightPanel/TeamSlotsContainer/TeamSlots/TeamSlot4/CharacterInfo"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 15.0
+offset_top = 5.0
+offset_right = 100.0
+offset_bottom = 25.0
+grow_vertical = 2
+theme_override_font_sizes/font_size = 14
+text = "Level 1"
+vertical_alignment = 1
+
+[node name="CharacterElement" type="Label" parent="MainContainer/RightPanel/TeamSlotsContainer/TeamSlots/TeamSlot4/CharacterInfo"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 120.0
+offset_top = 5.0
+offset_right = 200.0
+offset_bottom = 25.0
+grow_vertical = 2
+theme_override_font_sizes/font_size = 14
+text = "Element"
+vertical_alignment = 1
+
+[node name="CharacterPower" type="Label" parent="MainContainer/RightPanel/TeamSlotsContainer/TeamSlots/TeamSlot4/CharacterInfo"]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -120.0
+offset_top = -10.0
+offset_right = -15.0
+offset_bottom = 10.0
+grow_horizontal = 0
+grow_vertical = 2
+theme_override_font_sizes/font_size = 16
+text = "Power: 0"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="RemoveHint" type="Label" parent="MainContainer/RightPanel/TeamSlotsContainer/TeamSlots/TeamSlot4/CharacterInfo"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -150.0
+offset_top = -20.0
+offset_right = -15.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_font_sizes/font_size = 10
+text = "Right-click to remove"
+horizontal_alignment = 2
+modulate = Color(0.7, 0.7, 0.7, 1)
+
+[node name="Separator3" type="HSeparator" parent="MainContainer/RightPanel"]
+layout_mode = 2
+
+[node name="QuickActions" type="HBoxContainer" parent="MainContainer/RightPanel"]
+layout_mode = 2
+alignment = 1
+
+[node name="ClearTeamButton" type="Button" parent="MainContainer/RightPanel/QuickActions"]
+custom_minimum_size = Vector2(120, 40)
+layout_mode = 2
+text = "Clear Team"
+
+[node name="AutoFillButton" type="Button" parent="MainContainer/RightPanel/QuickActions"]
+custom_minimum_size = Vector2(120, 40)
+layout_mode = 2
+text = "Auto Fill"
