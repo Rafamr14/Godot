@@ -11,6 +11,7 @@ enum Element { WATER, FIRE, EARTH, RADIANT, VOID }
 @export var rarity: Rarity = Rarity.COMMON
 @export var element: Element = Element.WATER
 @export var character_type: CharacterType = CharacterType.PLAYER
+@export var character_class: CharacterTemplate.CharacterClass = CharacterTemplate.CharacterClass.WARRIOR
 
 # Stats de combate base
 @export var base_hp: int = 100
@@ -45,6 +46,7 @@ var debuffs: Array[StatusEffect] = []
 var weapon: Equipment
 var armor: Equipment
 var accessory: Equipment
+var boots: Equipment  # Agregar boots que faltaba
 
 func setup(name: String, lvl: int, rar: Rarity, elem: Element, hp: int, atk: int, def: int, spd: int, crit_c: float = 0.15, crit_d: float = 1.5):
 	character_name = name
@@ -153,7 +155,7 @@ func add_combat_readiness(amount: float):
 func reset_combat_readiness():
 	combat_readiness = 0.0
 
-func add_status_effect(effect: StatusEffect):
+func add_status_effect(effect: StatusEffect) -> bool:
 	# Verificar resistencia
 	if effect.is_debuff and randf() < effect_resistance:
 		return false  # Resistió el efecto
@@ -203,3 +205,11 @@ func get_element_name() -> String:
 		Element.RADIANT: return "Radiant"
 		Element.VOID: return "Void"
 		_: return "Unknown"
+
+# Duplicar para crear una instancia única
+func duplicate_character() -> Character:
+	var new_character = Character.new()
+	new_character.setup(character_name, level, rarity, element, base_hp, base_attack, base_defense, base_speed, base_crit_chance, base_crit_damage)
+	new_character.character_type = character_type
+	new_character.character_class = character_class
+	return new_character

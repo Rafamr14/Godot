@@ -1,0 +1,71 @@
+[gd_scene load_steps=2 format=3 uid="uid://bdoaaswtdobng"]
+
+[ext_resource type="Script" uid="uid://vam1k2w7on85" path="res://Scripts/EnhancedBattleUI.gd" id="1_d17lq"]
+
+[node name="BattleUI" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_d17lq")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TopPanel" type="HBoxContainer" parent="VBoxContainer"]
+custom_minimum_size = Vector2(0, 100)
+layout_mode = 2
+
+[node name="TurnInfo" type="VBoxContainer" parent="VBoxContainer/TopPanel"]
+layout_mode = 2
+
+[node name="CurrentTurn" type="Label" parent="VBoxContainer/TopPanel/TurnInfo"]
+layout_mode = 2
+text = "Turn: "
+
+[node name="TurnCounter" type="Label" parent="VBoxContainer/TopPanel/TurnInfo"]
+layout_mode = 2
+text = "Turn: 0"
+
+[node name="SpeedBar" type="Control" parent="VBoxContainer/TopPanel"]
+custom_minimum_size = Vector2(400, 50)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="MiddlePanel" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="PlayerTeam" type="HBoxContainer" parent="VBoxContainer/MiddlePanel"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="EnemyTeam" type="HBoxContainer" parent="VBoxContainer/MiddlePanel"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="BottomPanel" type="VBoxContainer" parent="VBoxContainer"]
+custom_minimum_size = Vector2(0, 200)
+layout_mode = 2
+
+[node name="SkillButtons" type="HBoxContainer" parent="VBoxContainer/BottomPanel"]
+layout_mode = 2
+
+[node name="TargetSelection" type="Control" parent="VBoxContainer/BottomPanel"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+
+[node name="CombatLog" type="ScrollContainer" parent="VBoxContainer/BottomPanel"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/BottomPanel/CombatLog"]
+layout_mode = 2
+size_flags_horizontal = 3

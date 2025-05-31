@@ -1,4 +1,4 @@
-# ==== MAIN CONTROLLER CORREGIDO (Main.gd) ====
+# ==== MAIN CONTROLLER FIXED (Main.gd) ====
 extends Control
 
 # Sistema principal
@@ -7,15 +7,16 @@ var gacha_system: GachaSystem
 var battle_system: BattleSystem
 var chapter_system: ChapterSystem
 var character_menu_system: CharacterMenuSystem
+var equipment_manager: EquipmentManager
 
-# Interfaces de usuario
-var main_menu: Control
-var chapter_ui: Control
-var team_formation_ui: Control
-var battle_ui: Control
-var gacha_ui: Control
-var inventory_ui: Control
-var character_detail_ui: Control
+# Interfaces de usuario (desde la escena)
+@onready var main_menu = $MainMenu
+@onready var chapter_ui = $ChapterUI
+@onready var team_formation_ui = $TeamFormationUI
+@onready var battle_ui = $BattleUI
+@onready var gacha_ui = $GachaUI
+@onready var inventory_ui = $InventoryUI
+@onready var character_detail_ui = $CharacterDetailUI
 
 # Estado actual
 var current_screen: String = "main_menu"
@@ -23,345 +24,302 @@ var selected_chapter: int = 0
 var selected_stage: int = 0
 
 func _ready():
-	await get_tree().process_frame
-	_initialize_systems()
-	_initialize_ui()
+	print("=== STARTING GAME INITIALIZATION ===")
+	print("Initializing game systems...")
+
+	game_manager = get_node_or_null("GameManager")
+	gacha_system = get_node_or_null("GachaSystem")
+	battle_system = get_node_or_null("BattleSystem")
+
+	main_menu = get_node_or_null("MainMenu")
+
 	_setup_connections()
+	print("Main.gd _ready() finished.")
+
+	# Mostrar menú inicial claramente
 	_show_screen("main_menu")
+
+
+
+func _diagnose_input_blockers(node: Node, depth: int):
+	if node is Control:
+		var control_node = node as Control
+		if control_node.mouse_filter != Control.MOUSE_FILTER_IGNORE and control_node.visible:
+			print("Overlay posible detectado → ", "-".repeat(depth), node.get_path(), ", Visible: ", control_node.visible, ", Mouse filter: ", control_node.mouse_filter)
+
+	for child in node.get_children():
+		_diagnose_input_blockers(child, depth + 1)
 
 func _initialize_systems():
 	print("Initializing game systems...")
 	
-	# Buscar o crear GameManager
-	game_manager = get_node_or_null("GameManager")
+	# GameManager ya existe en la escena
+	game_manager = $GameManager
 	if game_manager == null:
-		print("Creating GameManager...")
-		game_manager = GameManager.new()
-		game_manager.name = "GameManager"
-		add_child(game_manager)
+		print("ERROR: GameManager not found in scene!")
+		return
+	else:
+		print("✓ GameManager found")
 	
-	# Buscar o crear GachaSystem
-	gacha_system = get_node_or_null("GachaSystem")
+	# GachaSystem ya existe en la escena
+	gacha_system = $GachaSystem
 	if gacha_system == null:
-		print("Creating GachaSystem...")
-		gacha_system = GachaSystem.new()
-		gacha_system.name = "GachaSystem"
-		add_child(gacha_system)
+		print("ERROR: GachaSystem not found in scene!")
+		return
+	else:
+		print("✓ GachaSystem found")
 	
-	# Buscar o crear BattleSystem
-	battle_system = get_node_or_null("BattleSystem")
+	# BattleSystem ya existe en la escena
+	battle_system = $BattleSystem
 	if battle_system == null:
-		print("Creating BattleSystem...")
-		battle_system = BattleSystem.new()
-		battle_system.name = "BattleSystem"
-		add_child(battle_system)
+		print("ERROR: BattleSystem not found in scene!")
+		return
+	else:
+		print("✓ BattleSystem found")
 	
-	# Buscar o crear ChapterSystem
-	chapter_system = get_node_or_null("ChapterSystem")
-	if chapter_system == null:
-		print("Creating ChapterSystem...")
-		chapter_system = ChapterSystem.new()
-		chapter_system.name = "ChapterSystem"
-		add_child(chapter_system)
+	# Crear sistemas faltantes
+	chapter_system = ChapterSystem.new()
+	chapter_system.name = "ChapterSystem"
+	add_child(chapter_system)
+	print("✓ ChapterSystem created")
 	
-	# Buscar o crear CharacterMenuSystem
-	character_menu_system = get_node_or_null("CharacterMenuSystem")
-	if character_menu_system == null:
-		print("Creating CharacterMenuSystem...")
-		character_menu_system = CharacterMenuSystem.new()
-		character_menu_system.name = "CharacterMenuSystem"
-		add_child(character_menu_system)
+	character_menu_system = CharacterMenuSystem.new()
+	character_menu_system.name = "CharacterMenuSystem"
+	add_child(character_menu_system)
+	print("✓ CharacterMenuSystem created")
+	
+	equipment_manager = EquipmentManager.new()
+	equipment_manager.name = "EquipmentManager"
+	add_child(equipment_manager)
+	print("✓ EquipmentManager created")
 	
 	print("All systems initialized!")
 
-func _initialize_ui():
-	print("Initializing UI...")
+func _setup_ui_references():
+	print("Setting up UI references...")
 	
-	# Buscar o crear MainMenu
-	main_menu = get_node_or_null("MainMenu")
-	if main_menu == null:
-		print("Creating MainMenu...")
-		main_menu = _create_main_menu()
-		add_child(main_menu)
+	# Debug: Verificar que las UI existen
+	print("MainMenu exists: ", main_menu != null)
+	print("ChapterUI exists: ", chapter_ui != null)
+	print("TeamFormationUI exists: ", team_formation_ui != null)
+	print("BattleUI exists: ", battle_ui != null)
+	print("GachaUI exists: ", gacha_ui != null)
+	print("InventoryUI exists: ", inventory_ui != null)
+	print("CharacterDetailUI exists: ", character_detail_ui != null)
 	
-	# Buscar o crear otras UI
-	chapter_ui = get_node_or_null("ChapterUI")
-	if chapter_ui == null:
-		print("Creating ChapterUI...")
-		chapter_ui = _create_chapter_ui()
-		add_child(chapter_ui)
+	# Las referencias ya están configuradas con @onready
+	# Solo necesitamos configurar elementos internos que falten
 	
-	team_formation_ui = get_node_or_null("TeamFormationUI")
-	if team_formation_ui == null:
-		print("Creating TeamFormationUI...")
-		team_formation_ui = _create_team_formation_ui()
-		add_child(team_formation_ui)
+	# Configurar elementos faltantes en ChapterUI
+	if chapter_ui and not chapter_ui.has_node("VBoxContainer"):
+		_setup_chapter_ui_structure()
 	
-	battle_ui = get_node_or_null("BattleUI")
-	if battle_ui == null:
-		print("Creating BattleUI...")
-		battle_ui = _create_battle_ui()
-		add_child(battle_ui)
+	# Configurar elementos faltantes en TeamFormationUI
+	if team_formation_ui and not team_formation_ui.has_node("HBoxContainer"):
+		_setup_team_formation_ui_structure()
 	
-	gacha_ui = get_node_or_null("GachaUI")
-	if gacha_ui == null:
-		print("Creating GachaUI...")
-		gacha_ui = _create_gacha_ui()
-		add_child(gacha_ui)
-	
-	inventory_ui = get_node_or_null("InventoryUI")
-	if inventory_ui == null:
-		print("Creating InventoryUI...")
-		inventory_ui = _create_inventory_ui()
-		add_child(inventory_ui)
-	
-	character_detail_ui = get_node_or_null("CharacterDetailUI")
-	if character_detail_ui == null:
-		print("Creating CharacterDetailUI...")
-		character_detail_ui = _create_character_detail_ui()
-		add_child(character_detail_ui)
-	
-	print("All UI initialized!")
-	_initialize_enhanced_starter_characters()
+	# Configurar elementos faltantes en CharacterDetailUI
+	if character_detail_ui and not character_detail_ui.has_node("VBoxContainer"):
+		_setup_character_detail_ui_structure()
 
-func _create_main_menu() -> Control:
-	var menu = Control.new()
-	menu.name = "MainMenu"
-	
+func _setup_chapter_ui_structure():
+	# Ya tiene estructura en la escena, solo asegurar que esté completa
+	var vbox = chapter_ui.get_node_or_null("VBoxContainer")
+	if not vbox:
+		vbox = VBoxContainer.new()
+		vbox.position = Vector2(50, 50)
+		chapter_ui.add_child(vbox)
+		
+		var title = Label.new()
+		title.text = "Adventure"
+		title.add_theme_font_size_override("font_size", 24)
+		vbox.add_child(title)
+		
+		var scroll = ScrollContainer.new()
+		scroll.custom_minimum_size = Vector2(400, 300)
+		vbox.add_child(scroll)
+		
+		var chapter_list = VBoxContainer.new()
+		chapter_list.name = "ChapterList"
+		scroll.add_child(chapter_list)
+		
+		var chapter_info = Label.new()
+		chapter_info.name = "ChapterInfo"
+		chapter_info.custom_minimum_size = Vector2(400, 100)
+		vbox.add_child(chapter_info)
+		
+		var back_button = Button.new()
+		back_button.name = "BackButton"
+		back_button.text = "Back"
+		vbox.add_child(back_button)
+
+func _setup_team_formation_ui_structure():
+	# Estructura ya existe en la escena
+	pass
+
+func _setup_character_detail_ui_structure():
+	# Crear estructura completa para CharacterDetailUI
 	var vbox = VBoxContainer.new()
 	vbox.position = Vector2(50, 50)
-	menu.add_child(vbox)
+	character_detail_ui.add_child(vbox)
 	
-	var title = Label.new()
-	title.text = "Epic Gacha RPG"
-	title.add_theme_font_size_override("font_size", 32)
-	vbox.add_child(title)
-	
-	var player_info = Label.new()
-	player_info.name = "PlayerInfo"
-	player_info.text = "Level 1 | Power: 0"
-	vbox.add_child(player_info)
-	
-	var currency_label = Label.new()
-	currency_label.name = "CurrencyLabel"
-	currency_label.text = "Gold: 2000"
-	vbox.add_child(currency_label)
-	
-	var chapter_button = Button.new()
-	chapter_button.name = "ChapterButton"
-	chapter_button.text = "Adventure"
-	chapter_button.custom_minimum_size = Vector2(200, 50)
-	vbox.add_child(chapter_button)
-	
-	var team_button = Button.new()
-	team_button.name = "TeamButton"
-	team_button.text = "Team"
-	team_button.custom_minimum_size = Vector2(200, 50)
-	vbox.add_child(team_button)
-	
-	var gacha_button = Button.new()
-	gacha_button.name = "GachaButton"
-	gacha_button.text = "Summon"
-	gacha_button.custom_minimum_size = Vector2(200, 50)
-	vbox.add_child(gacha_button)
-	
-	var inventory_button = Button.new()
-	inventory_button.name = "InventoryButton"
-	inventory_button.text = "Heroes"
-	inventory_button.custom_minimum_size = Vector2(200, 50)
-	vbox.add_child(inventory_button)
-	
-	return menu
-
-func _create_chapter_ui() -> Control:
-	var ui = Control.new()
-	ui.name = "ChapterUI"
-	ui.visible = false
-	
-	var script = load("res://scripts/ChapterSelectionUI.gd")
-	ui.set_script(script)
-	
-	return ui
-
-func _create_team_formation_ui() -> Control:
-	var ui = Control.new()
-	ui.name = "TeamFormationUI"
-	ui.visible = false
-	
-	var script = load("res://scripts/TeamFormationUI.gd")
-	ui.set_script(script)
-	
-	return ui
-
-func _create_battle_ui() -> Control:
-	var ui = Control.new()
-	ui.name = "BattleUI"
-	ui.visible = false
-	
-	var script = load("res://scripts/EnhancedBattleUI.gd")
-	ui.set_script(script)
-	
-	return ui
-
-func _create_gacha_ui() -> Control:
-	var ui = Control.new()
-	ui.name = "GachaUI"
-	ui.visible = false
-	
-	var vbox = VBoxContainer.new()
-	vbox.position = Vector2(50, 50)
-	ui.add_child(vbox)
-	
-	var title = Label.new()
-	title.text = "Hero Summon"
-	title.add_theme_font_size_override("font_size", 24)
-	vbox.add_child(title)
-	
-	var currency_label = Label.new()
-	currency_label.name = "CurrencyLabel"
-	currency_label.text = "Gold: 2000"
-	vbox.add_child(currency_label)
-	
-	var pity_label = Label.new()
-	pity_label.name = "PityLabel"
-	pity_label.text = "Pity: 0/90"
-	vbox.add_child(pity_label)
-	
-	var single_pull_button = Button.new()
-	single_pull_button.name = "SinglePullButton"
-	single_pull_button.text = "Single Summon (100)"
-	single_pull_button.custom_minimum_size = Vector2(200, 50)
-	vbox.add_child(single_pull_button)
-	
-	var ten_pull_button = Button.new()
-	ten_pull_button.name = "TenPullButton"
-	ten_pull_button.text = "10x Summon (900)"
-	ten_pull_button.custom_minimum_size = Vector2(200, 50)
-	vbox.add_child(ten_pull_button)
-	
-	var result_label = Label.new()
-	result_label.name = "ResultLabel"
-	result_label.text = "Results appear here"
-	result_label.custom_minimum_size = Vector2(300, 200)
-	result_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	vbox.add_child(result_label)
-	
-	var back_button = Button.new()
-	back_button.name = "BackButton"
-	back_button.text = "Back"
-	back_button.custom_minimum_size = Vector2(100, 40)
-	vbox.add_child(back_button)
-	
-	return ui
-
-func _create_inventory_ui() -> Control:
-	var ui = Control.new()
-	ui.name = "InventoryUI"
-	ui.visible = false
-	
-	var vbox = VBoxContainer.new()
-	vbox.position = Vector2(50, 50)
-	ui.add_child(vbox)
-	
-	var title = Label.new()
-	title.text = "Hero Collection"
-	title.add_theme_font_size_override("font_size", 24)
-	vbox.add_child(title)
-	
-	var stats_label = Label.new()
-	stats_label.name = "StatsLabel"
-	stats_label.text = "Total Heroes: 0"
-	vbox.add_child(stats_label)
-	
-	var scroll = ScrollContainer.new()
-	scroll.custom_minimum_size = Vector2(400, 300)
-	vbox.add_child(scroll)
-	
-	var inventory_list = VBoxContainer.new()
-	inventory_list.name = "InventoryList"
-	scroll.add_child(inventory_list)
-	
-	var back_button = Button.new()
-	back_button.name = "BackButton"
-	back_button.text = "Back"
-	back_button.custom_minimum_size = Vector2(100, 40)
-	vbox.add_child(back_button)
-	
-	return ui
-
-func _create_character_detail_ui() -> Control:
-	var ui = Control.new()
-	ui.name = "CharacterDetailUI"
-	ui.visible = false
-	
-	var script = load("res://scripts/CharacterDetailView.gd")
-	ui.set_script(script)
-	
-	return ui
+	# Los otros elementos serán creados por CharacterDetailView.gd
 
 func _setup_connections():
-	print("Setting up connections...")
+	print("\n=== Setting up connections ===")
 	
 	# Main Menu connections
 	if main_menu:
-		var chapter_btn = main_menu.get_node_or_null("VBoxContainer/ChapterButton")
-		var team_btn = main_menu.get_node_or_null("VBoxContainer/TeamButton")
-		var gacha_btn = main_menu.get_node_or_null("VBoxContainer/GachaButton")
-		var inventory_btn = main_menu.get_node_or_null("VBoxContainer/InventoryButton")
+		print("Setting up MainMenu connections...")
+		var vbox = main_menu.get_node_or_null("VBoxContainer")
+		if not vbox:
+			print("ERROR: VBoxContainer not found in MainMenu!")
+			return
+			
+		var chapter_btn = vbox.get_node_or_null("ChapterButton")
+		var team_btn = vbox.get_node_or_null("TeamButton")
+		var gacha_btn = vbox.get_node_or_null("GachaButton")
+		var inventory_btn = vbox.get_node_or_null("InventoryButton")
 		
+		# Debug print
+		print("ChapterButton found: ", chapter_btn != null)
+		print("TeamButton found: ", team_btn != null)
+		print("GachaButton found: ", gacha_btn != null)
+		print("InventoryButton found: ", inventory_btn != null)
+		
+		# Conectar señales
 		if chapter_btn:
-			chapter_btn.pressed.connect(func(): _show_screen("chapters"))
+			chapter_btn.pressed.connect(_on_chapter_button_pressed)
+			print("✓ ChapterButton connected")
+		else:
+			print("ERROR: ChapterButton not found!")
+			
 		if team_btn:
-			team_btn.pressed.connect(func(): _show_screen("team_formation"))
+			team_btn.pressed.connect(_on_team_button_pressed)
+			print("✓ TeamButton connected")
+		else:
+			print("ERROR: TeamButton not found!")
+			
 		if gacha_btn:
-			gacha_btn.pressed.connect(func(): _show_screen("gacha"))
+			gacha_btn.pressed.connect(_on_gacha_button_pressed)
+			print("✓ GachaButton connected")
+		else:
+			print("ERROR: GachaButton not found!")
+			
 		if inventory_btn:
-			inventory_btn.pressed.connect(func(): _show_screen("inventory"))
+			inventory_btn.pressed.connect(_on_inventory_button_pressed)
+			print("✓ InventoryButton connected")
+		else:
+			print("ERROR: InventoryButton not found!")
+	else:
+		print("ERROR: MainMenu is null!")
 	
 	# Chapter system connections
 	if chapter_ui and chapter_ui.has_signal("back_pressed"):
-		chapter_ui.back_pressed.connect(func(): _show_screen("main_menu"))
-		chapter_ui.stage_selected.connect(_on_stage_selected)
+		if not chapter_ui.back_pressed.is_connected(_on_chapter_back_pressed):
+			chapter_ui.back_pressed.connect(_on_chapter_back_pressed)
+		if not chapter_ui.stage_selected.is_connected(_on_stage_selected):
+			chapter_ui.stage_selected.connect(_on_stage_selected)
 	
 	# Team formation connections
 	if team_formation_ui and team_formation_ui.has_signal("back_pressed"):
-		team_formation_ui.back_pressed.connect(func(): _show_screen("main_menu"))
-		team_formation_ui.team_updated.connect(_on_team_updated)
+		if not team_formation_ui.back_pressed.is_connected(_on_team_back_pressed):
+			team_formation_ui.back_pressed.connect(_on_team_back_pressed)
+		if not team_formation_ui.team_updated.is_connected(_on_team_updated):
+			team_formation_ui.team_updated.connect(_on_team_updated)
 	
 	# Battle connections
 	if battle_system:
-		battle_system.turn_started.connect(_on_battle_turn_started)
-		battle_system.skill_used.connect(_on_battle_skill_used)
-		battle_system.battle_phase_changed.connect(_on_battle_phase_changed)
+		if not battle_system.turn_started.is_connected(_on_battle_turn_started):
+			battle_system.turn_started.connect(_on_battle_turn_started)
+		if not battle_system.skill_used.is_connected(_on_battle_skill_used):
+			battle_system.skill_used.connect(_on_battle_skill_used)
+		if not battle_system.battle_phase_changed.is_connected(_on_battle_phase_changed):
+			battle_system.battle_phase_changed.connect(_on_battle_phase_changed)
 	
 	if game_manager:
-		game_manager.battle_ended.connect(_on_battle_ended)
+		if not game_manager.battle_ended.is_connected(_on_battle_ended):
+			game_manager.battle_ended.connect(_on_battle_ended)
+		if not game_manager.currency_changed.is_connected(_on_currency_changed):
+			game_manager.currency_changed.connect(_on_currency_changed)
+		if not game_manager.player_level_changed.is_connected(_on_player_level_changed):
+			game_manager.player_level_changed.connect(_on_player_level_changed)
 	
 	# Gacha connections
 	if gacha_ui:
-		var single_btn = gacha_ui.get_node_or_null("VBoxContainer/SinglePullButton")
-		var ten_btn = gacha_ui.get_node_or_null("VBoxContainer/TenPullButton")
-		var back_btn = gacha_ui.get_node_or_null("VBoxContainer/BackButton")
+		var single_btn = gacha_ui.get_node("VBoxContainer/SinglePullButton")
+		var ten_btn = gacha_ui.get_node("VBoxContainer/TenPullButton")
+		var back_btn = gacha_ui.get_node("VBoxContainer/BackButton")
 		
-		if single_btn:
+		if single_btn and not single_btn.pressed.is_connected(_single_pull):
 			single_btn.pressed.connect(_single_pull)
-		if ten_btn:
+		if ten_btn and not ten_btn.pressed.is_connected(_ten_pull):
 			ten_btn.pressed.connect(_ten_pull)
-		if back_btn:
-			back_btn.pressed.connect(func(): _show_screen("main_menu"))
+		if back_btn and not back_btn.pressed.is_connected(_on_gacha_back_pressed):
+			back_btn.pressed.connect(_on_gacha_back_pressed)
 	
 	# Inventory connections
 	if inventory_ui:
-		var back_btn = inventory_ui.get_node_or_null("VBoxContainer/BackButton")
-		if back_btn:
-			back_btn.pressed.connect(func(): _show_screen("main_menu"))
+		var back_btn = inventory_ui.get_node("VBoxContainer/BackButton")
+		if back_btn and not back_btn.pressed.is_connected(_on_inventory_back_pressed):
+			back_btn.pressed.connect(_on_inventory_back_pressed)
+		
+		# Agregar StatsLabel si no existe
+		var stats_label = inventory_ui.get_node_or_null("VBoxContainer/StatsLabel")
+		if not stats_label:
+			stats_label = Label.new()
+			stats_label.name = "StatsLabel"
+			stats_label.text = "Total Heroes: 0"
+			# Insertar después del título
+			inventory_ui.get_node("VBoxContainer").add_child(stats_label)
+			inventory_ui.get_node("VBoxContainer").move_child(stats_label, 1)
 	
 	# Character detail connections
 	if character_detail_ui and character_detail_ui.has_signal("back_pressed"):
-		character_detail_ui.back_pressed.connect(func(): _show_screen("team_formation"))
-		character_detail_ui.character_updated.connect(_on_character_updated)
+		if not character_detail_ui.back_pressed.is_connected(_on_character_detail_back_pressed):
+			character_detail_ui.back_pressed.connect(_on_character_detail_back_pressed)
+		if not character_detail_ui.character_updated.is_connected(_on_character_updated):
+			character_detail_ui.character_updated.connect(_on_character_updated)
 	
 	print("Connections setup complete!")
+
+# Button handlers separados para mejor organización
+func _on_chapter_button_pressed():
+	print("Chapter button pressed!")
+	_show_screen("chapters")
+
+func _on_team_button_pressed():
+	print("Team button pressed!")
+	_show_screen("team_formation")
+
+func _on_gacha_button_pressed():
+	print("Gacha button pressed!")
+	_show_screen("gacha")
+
+func _on_inventory_button_pressed():
+	print("Inventory button pressed!")
+	_show_screen("inventory")
+
+func _on_chapter_back_pressed():
+	_show_screen("main_menu")
+
+func _on_team_back_pressed():
+	_show_screen("main_menu")
+
+func _on_gacha_back_pressed():
+	_show_screen("main_menu")
+
+func _on_inventory_back_pressed():
+	_show_screen("main_menu")
+
+func _on_character_detail_back_pressed():
+	_show_screen("team_formation")
+
+func _on_currency_changed(new_amount: int):
+	_update_currency_displays()
+
+func _on_player_level_changed(new_level: int):
+	_update_main_menu_display()
 
 func _initialize_enhanced_starter_characters():
 	if not game_manager:
@@ -393,61 +351,57 @@ func _initialize_enhanced_starter_characters():
 		character_menu_system.set_team_formation([warrior, mage])
 
 func _show_screen(screen_name: String):
-	print("Showing screen: " + screen_name)
-	
-	# Ocultar todas las pantallas
-	_hide_all_screens()
-	
-	# Mostrar la pantalla solicitada
+	print("Mostrando pantalla:", screen_name)
+
+	# Limpia la escena anterior si existe
+	for child in get_children():
+		if child.name.ends_with("UI") and child.name != "MainMenu":
+			child.queue_free()
+
+	# Oculta el menú principal
+	if main_menu:
+		main_menu.visible = false
+
+	var new_scene = null
+
 	match screen_name:
+		"chapters":
+			new_scene = load("res://scenes/ChapterUI.tscn").instantiate()
+		"team_formation":
+			new_scene = load("res://scenes/TeamFormationUI.tscn").instantiate()
+		"battle":
+			new_scene = load("res://scenes/BattleUI.tscn").instantiate()
+		"gacha":
+			new_scene = load("res://scenes/GachaUI.tscn").instantiate()
+		"inventory":
+			new_scene = load("res://scenes/InventoryUI.tscn").instantiate()
+		"character_detail":
+			new_scene = load("res://scenes/CharacterDetailUI.tscn").instantiate()
 		"main_menu":
 			if main_menu:
 				main_menu.visible = true
-				_update_main_menu_display()
-		
-		"chapters":
-			if chapter_ui:
-				chapter_ui.visible = true
-		
-		"team_formation":
-			if team_formation_ui:
-				team_formation_ui.visible = true
-		
-		"battle":
-			if battle_ui:
-				battle_ui.visible = true
-		
-		"gacha":
-			if gacha_ui:
-				gacha_ui.visible = true
-				_update_gacha_display()
-		
-		"inventory":
-			if inventory_ui:
-				inventory_ui.visible = true
-				_update_inventory_display()
-		
-		"character_detail":
-			if character_detail_ui:
-				character_detail_ui.visible = true
-	
-	current_screen = screen_name
+				return  # No hace falta cargar otra escena aquí
+
+	# Añade la nueva escena como hija
+	if new_scene:
+		add_child(new_scene)
+
 
 func _hide_all_screens():
-	if main_menu:
-		main_menu.visible = false
-	if chapter_ui:
-		chapter_ui.visible = false
-	if team_formation_ui:
-		team_formation_ui.visible = false
-	if battle_ui:
-		battle_ui.visible = false
-	if gacha_ui:
-		gacha_ui.visible = false
-	if inventory_ui:
-		inventory_ui.visible = false
-	if character_detail_ui:
-		character_detail_ui.visible = false
+	_set_visibility_recursive(main_menu, false)
+	_set_visibility_recursive(chapter_ui, false)
+	_set_visibility_recursive(team_formation_ui, false)
+	_set_visibility_recursive(battle_ui, false)
+	_set_visibility_recursive(gacha_ui, false)
+	_set_visibility_recursive(inventory_ui, false)
+	_set_visibility_recursive(character_detail_ui, false)
+
+func _set_visibility_recursive(node: Node, visibility: bool):
+	if node and node is CanvasItem:
+		(node as CanvasItem).visible = visibility
+	for child in node.get_children():
+		_set_visibility_recursive(child, visibility)
+
 
 func _update_main_menu_display():
 	if not main_menu or not game_manager:
@@ -461,6 +415,11 @@ func _update_main_menu_display():
 	
 	if player_info:
 		player_info.text = "Level: " + str(game_manager.player_level) + " | Team Power: " + str(_calculate_team_power())
+
+func _update_currency_displays():
+	# Actualizar currency en todas las pantallas
+	_update_main_menu_display()
+	_update_gacha_display()
 
 func _calculate_team_power() -> int:
 	if not game_manager:
@@ -496,6 +455,7 @@ func _start_stage_battle(chapter_id: int, stage_id: int):
 	# Verificar que el equipo esté listo
 	if game_manager.player_team.is_empty():
 		print("No team selected!")
+		_show_insufficient_team_message()
 		return
 	
 	# Iniciar batalla
@@ -533,7 +493,13 @@ func _handle_stage_victory():
 	if rewards:
 		# Aplicar recompensas
 		game_manager.add_currency(rewards.gold)
+		game_manager.add_experience(rewards.experience)
 		print("Stage completed! Rewards: " + str(rewards.gold) + " gold, " + str(rewards.experience) + " exp")
+		
+		# Agregar personaje garantizado si existe
+		if rewards.guaranteed_character:
+			game_manager.player_inventory.append(rewards.guaranteed_character)
+			print("New character obtained: " + rewards.guaranteed_character.character_name)
 	
 	# Regresar al menú después de un tiempo
 	await get_tree().create_timer(3.0).timeout
@@ -546,7 +512,8 @@ func _handle_stage_defeat():
 
 func _on_character_updated():
 	if current_screen == "team_formation":
-		pass  # La UI se actualiza automáticamente
+		# La UI se actualiza automáticamente
+		_update_main_menu_display()
 
 # ==== GACHA FUNCTIONS ====
 
@@ -555,7 +522,7 @@ func _single_pull():
 		return
 		
 	if game_manager.game_currency >= 100:
-		game_manager.game_currency -= 100
+		game_manager.spend_currency(100)
 		var new_character = gacha_system.single_pull()
 		game_manager.player_inventory.append(new_character)
 		_show_gacha_result([new_character])
@@ -567,7 +534,7 @@ func _ten_pull():
 		return
 		
 	if game_manager.game_currency >= 900:
-		game_manager.game_currency -= 900
+		game_manager.spend_currency(900)
 		var new_characters = gacha_system.ten_pull()
 		game_manager.player_inventory.append_array(new_characters)
 		_show_gacha_result(new_characters)
@@ -599,6 +566,13 @@ func _calculate_character_power(character: Character) -> int:
 func _show_insufficient_currency_message():
 	var popup = AcceptDialog.new()
 	popup.dialog_text = "Insufficient gold!"
+	add_child(popup)
+	popup.popup_centered()
+	popup.confirmed.connect(func(): popup.queue_free())
+
+func _show_insufficient_team_message():
+	var popup = AcceptDialog.new()
+	popup.dialog_text = "Please select a team before starting battle!"
 	add_child(popup)
 	popup.popup_centered()
 	popup.confirmed.connect(func(): popup.queue_free())
@@ -661,4 +635,12 @@ func _create_inventory_entry(character: Character) -> Control:
 	if character in game_manager.player_team:
 		entry.text += " ★"
 	
+	# Click para ver detalles
+	entry.pressed.connect(func(): _show_character_details(character))
+	
 	return entry
+
+func _show_character_details(character: Character):
+	if character_detail_ui and character_detail_ui.has_method("show_character"):
+		character_detail_ui.show_character(character)
+		_show_screen("character_detail")

@@ -1,17 +1,23 @@
-[gd_scene load_steps=9 format=3 uid="uid://b0pubs43dvkoy"]
+[gd_scene load_steps=7 format=3 uid="uid://b0pubs43dvkoy"]
 
 [ext_resource type="Script" uid="uid://b567hw6hc8kfv" path="res://Scripts/Main.gd" id="1_jyhfs"]
 [ext_resource type="Script" uid="uid://321vod0dgilt" path="res://Scripts/GameManager.gd" id="2_tbgi4"]
 [ext_resource type="Script" uid="uid://dhjkvbs1q3ves" path="res://Scripts/GachaSystem.gd" id="3_tefeu"]
 [ext_resource type="Script" uid="uid://bw4laowun5n0p" path="res://Scripts/BattleSystem.gd" id="4_o6xl0"]
-[ext_resource type="Script" uid="uid://vam1k2w7on85" path="res://Scripts/EnhancedBattleUI.gd" id="5_tipki"]
-[ext_resource type="Script" uid="uid://dolwfaoshyiob" path="res://Scripts/ChapterSelectionUI.gd" id="6_85g3d"]
-[ext_resource type="Script" uid="uid://b5837fr3lbtkg" path="res://Scripts/TeamFormationUI.gd" id="7_choun"]
-[ext_resource type="Script" uid="uid://bf7oqi7iav30h" path="res://Scripts/CharacterDetailView.gd" id="8_ya4ey"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_85g3d"]
+bg_color = Color(0.241729, 0.633897, 0.897724, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tipki"]
+bg_color = Color(0.720838, 0.631248, 0.0449258, 1)
 
 [node name="Main" type="Control"]
 layout_mode = 3
-anchors_preset = 0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 script = ExtResource("1_jyhfs")
 
 [node name="GameManager" type="Node" parent="."]
@@ -24,237 +30,51 @@ script = ExtResource("3_tefeu")
 script = ExtResource("4_o6xl0")
 
 [node name="MainMenu" type="Control" parent="."]
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MainMenu"]
 layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+offset_left = 50.0
+offset_top = 50.0
+offset_right = 350.0
+offset_bottom = 400.0
 
 [node name="TitleLabel" type="Label" parent="MainMenu/VBoxContainer"]
 layout_mode = 2
-text = "Gacha RPG"
+theme_override_font_sizes/font_size = 32
+text = "Epic Gacha RPG"
 
-[node name="StartBattleButton" type="Button" parent="MainMenu/VBoxContainer"]
+[node name="PlayerInfo" type="Label" parent="MainMenu/VBoxContainer"]
 layout_mode = 2
-text = "Start Battle"
-
-[node name="GachaButton" type="Button" parent="MainMenu/VBoxContainer"]
-layout_mode = 2
-text = "Gacha"
-
-[node name="InventoryButton" type="Button" parent="MainMenu/VBoxContainer"]
-layout_mode = 2
-text = "Inventory"
+text = "Level 1 | Power: 0"
 
 [node name="CurrencyLabel" type="Label" parent="MainMenu/VBoxContainer"]
 layout_mode = 2
-text = "Currency: 1000"
-
-[node name="BattleUI" type="Control" parent="."]
-visible = false
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
-script = ExtResource("5_tipki")
-
-[node name="VBoxContainer" type="VBoxContainer" parent="BattleUI"]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="TopPanel" type="HBoxContainer" parent="BattleUI/VBoxContainer"]
-layout_mode = 2
-
-[node name="TurnInfo" type="VBoxContainer" parent="BattleUI/VBoxContainer/TopPanel"]
-layout_mode = 2
-
-[node name="SpeedBar" type="Control" parent="BattleUI/VBoxContainer/TopPanel"]
-layout_mode = 2
-
-[node name="MiddlePanel" type="HBoxContainer" parent="BattleUI/VBoxContainer"]
-layout_mode = 2
-
-[node name="PlayerTeam" type="HBoxContainer" parent="BattleUI/VBoxContainer/MiddlePanel"]
-layout_mode = 2
-
-[node name="EnemyTeam" type="HBoxContainer" parent="BattleUI/VBoxContainer/MiddlePanel"]
-layout_mode = 2
-
-[node name="BottomPanel" type="VBoxContainer" parent="BattleUI/VBoxContainer"]
-layout_mode = 2
-
-[node name="SkillButtons" type="HBoxContainer" parent="BattleUI/VBoxContainer/BottomPanel"]
-layout_mode = 2
-
-[node name="TargetSelection" type="Control" parent="BattleUI/VBoxContainer/BottomPanel"]
-layout_mode = 2
-
-[node name="CombatLog" type="ScrollContainer" parent="BattleUI/VBoxContainer/BottomPanel"]
-layout_mode = 2
-
-[node name="GachaUI" type="Control" parent="."]
-visible = false
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="VBoxContainer" type="VBoxContainer" parent="GachaUI"]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="TitleLabel" type="Label" parent="GachaUI/VBoxContainer"]
-layout_mode = 2
-text = "Gacha System"
-
-[node name="CurrencyLabel" type="Label" parent="GachaUI/VBoxContainer"]
-layout_mode = 2
 text = "Gold: 2000"
 
-[node name="PityLabel" type="Label" parent="GachaUI/VBoxContainer"]
+[node name="ChapterButton" type="Button" parent="MainMenu/VBoxContainer"]
+custom_minimum_size = Vector2(200, 50)
 layout_mode = 2
-text = "Pity: 0/90"
-
-[node name="SinglePullButton" type="Button" parent="GachaUI/VBoxContainer"]
-layout_mode = 2
-text = "Single Pull (100)"
-
-[node name="TenPullButton" type="Button" parent="GachaUI/VBoxContainer"]
-layout_mode = 2
-text = "10x Pull (900)"
-
-[node name="ResultLabel" type="Label" parent="GachaUI/VBoxContainer"]
-layout_mode = 2
-text = "Results will appear here"
-
-[node name="BackButton" type="Button" parent="GachaUI/VBoxContainer"]
-layout_mode = 2
-text = "Back"
-
-[node name="InventoryUI" type="Control" parent="."]
-visible = false
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="VBoxContainer" type="VBoxContainer" parent="InventoryUI"]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="TitleLabel" type="Label" parent="InventoryUI/VBoxContainer"]
-layout_mode = 2
-text = "Inventory"
-
-[node name="ScrollContainer" type="ScrollContainer" parent="InventoryUI/VBoxContainer"]
-layout_mode = 2
-
-[node name="InventoryList" type="VBoxContainer" parent="InventoryUI/VBoxContainer/ScrollContainer"]
-layout_mode = 2
-
-[node name="BackButton" type="Button" parent="InventoryUI/VBoxContainer"]
-layout_mode = 2
-text = "Back"
-
-[node name="ChapterUI" type="Control" parent="."]
-visible = false
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
-script = ExtResource("6_85g3d")
-
-[node name="VBoxContainer" type="VBoxContainer" parent="ChapterUI"]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="TitleLabel" type="Label" parent="ChapterUI/VBoxContainer"]
-layout_mode = 2
+theme_override_styles/hover = SubResource("StyleBoxFlat_85g3d")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_tipki")
 text = "Adventure"
 
-[node name="ScrollContainer" type="ScrollContainer" parent="ChapterUI/VBoxContainer"]
+[node name="TeamButton" type="Button" parent="MainMenu/VBoxContainer"]
+custom_minimum_size = Vector2(200, 50)
 layout_mode = 2
+text = "Team"
 
-[node name="ChapterList" type="VBoxContainer" parent="ChapterUI/VBoxContainer/ScrollContainer"]
+[node name="GachaButton" type="Button" parent="MainMenu/VBoxContainer"]
+custom_minimum_size = Vector2(200, 50)
 layout_mode = 2
+text = "Summon"
 
-[node name="ChapterInfo" type="Label" parent="ChapterUI/VBoxContainer"]
+[node name="InventoryButton" type="Button" parent="MainMenu/VBoxContainer"]
+custom_minimum_size = Vector2(200, 50)
 layout_mode = 2
-
-[node name="BackButton" type="Button" parent="ChapterUI/VBoxContainer"]
-layout_mode = 2
-text = "Back"
-
-[node name="TeamFormationUI" type="Control" parent="."]
-visible = false
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
-script = ExtResource("7_choun")
-
-[node name="HBoxContainer" type="HBoxContainer" parent="TeamFormationUI"]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="LeftPanel" type="VBoxContainer" parent="TeamFormationUI/HBoxContainer"]
-layout_mode = 2
-
-[node name="FilterButtons" type="HBoxContainer" parent="TeamFormationUI/HBoxContainer/LeftPanel"]
-layout_mode = 2
-
-[node name="ScrollContainer" type="ScrollContainer" parent="TeamFormationUI/HBoxContainer/LeftPanel"]
-layout_mode = 2
-
-[node name="CharacterList" type="VBoxContainer" parent="TeamFormationUI/HBoxContainer/LeftPanel/ScrollContainer"]
-layout_mode = 2
-
-[node name="RightPanel" type="VBoxContainer" parent="TeamFormationUI/HBoxContainer"]
-layout_mode = 2
-
-[node name="TeamSlots" type="VBoxContainer" parent="TeamFormationUI/HBoxContainer/RightPanel"]
-layout_mode = 2
-
-[node name="TeamAnalysis" type="Label" parent="TeamFormationUI/HBoxContainer/RightPanel"]
-layout_mode = 2
-
-[node name="BackButton" type="Button" parent="TeamFormationUI/HBoxContainer/RightPanel"]
-layout_mode = 2
-text = "Back"
-
-[node name="CharacterDetailUI" type="Control" parent="."]
-visible = false
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
-script = ExtResource("8_ya4ey")
-
-[node name="CharacterInfo" type="Control" parent="CharacterDetailUI"]
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="StatsPanel" type="Control" parent="CharacterDetailUI"]
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="SkillsPanel" type="Control" parent="CharacterDetailUI"]
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="EquipmentPanel" type="Control" parent="CharacterDetailUI"]
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="LevelUpButton" type="Button" parent="CharacterDetailUI"]
-layout_mode = 0
-offset_right = 8.0
-offset_bottom = 8.0
-text = "Level Up"
-script = ExtResource("8_ya4ey")
+text = "Inventory"

@@ -1,0 +1,42 @@
+[gd_resource type="Resource" script_class="CharacterTemplate" load_steps=5 format=3 uid="uid://c5rluree60vex"]
+
+[ext_resource type="Script" uid="uid://yru1ukpwhg07" path="res://Scripts/AwakeningMaterial.gd" id="1_jqsjg"]
+[ext_resource type="Texture2D" uid="uid://da6uyufppxqhb" path="res://Images/blank.webp" id="2_ih41r"]
+[ext_resource type="Script" uid="uid://oyxpiaumjh2a" path="res://Scripts/CharacterTemplate.gd" id="2_n2xkv"]
+[ext_resource type="Script" uid="uid://dp54ekhc5dxxt" path="res://Scripts/SkillTemplate.gd" id="3_ih41r"]
+
+[resource]
+script = ExtResource("2_n2xkv")
+character_name = "Prueba"
+character_id = "1001"
+description = ""
+element = 0
+rarity = 0
+character_class = 0
+portrait = ExtResource("2_ih41r")
+battle_sprite = ExtResource("2_ih41r")
+skill_icons = Array[Texture2D]([])
+base_hp = 100
+base_attack = 20
+base_defense = 10
+base_speed = 80
+base_crit_chance = 0.15
+base_crit_damage = 1.5
+base_effectiveness = 0.0
+base_effect_resistance = 0.0
+base_elemental_mastery = 0.0
+hp_growth = 0.08
+attack_growth = 0.05
+defense_growth = 0.04
+speed_growth = 0.02
+skill_templates = Array[ExtResource("3_ih41r")]([])
+awakening_materials = Array[ExtResource("1_jqsjg")]([])
+voice_lines = {
+"defeat": "I'll be stronger next time...",
+"skill_1": "Take this!",
+"skill_2": "Feel my power!",
+"summon": "I'm ready to fight!",
+"ultimate": "This ends now!",
+"victory": "Victory is ours!"
+}
+metadata/_custom_type_script = "uid://oyxpiaumjh2a"
