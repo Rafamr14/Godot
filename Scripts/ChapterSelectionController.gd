@@ -1,31 +1,31 @@
-# ==== CHAPTER SELECTION CONTROLLER REWORKED ====
+# ==== CHAPTER SELECTION CONTROLLER REWORKED - PATHS CORREGIDOS ====
 extends Control
 
-# Referencias UI principales
+# Referencias UI principales - CORREGIDAS para coincidir con ChapterSelectionUI.tscn
 @onready var background = $Background
 @onready var main_container = $MainContainer
 
-# Left Panel - Chapter List
-@onready var chapters_panel = $MainContainer/LeftPanel
-@onready var chapters_title = $MainContainer/LeftPanel/HeaderLeft/ChaptersTitle
-@onready var progress_indicator = $MainContainer/LeftPanel/HeaderLeft/ProgressIndicator
-@onready var chapters_scroll = $MainContainer/LeftPanel/ScrollContainer
-@onready var chapters_list = $MainContainer/LeftPanel/ScrollContainer/ChaptersList
+# Left Panel - Chapter List - PATHS CORREGIDOS
+@onready var chapters_panel = $MainContainer/ContentArea/LeftPanel
+@onready var chapters_title = $MainContainer/ContentArea/LeftPanel/HeaderLeft/ChaptersTitle
+@onready var progress_indicator = $MainContainer/ContentArea/LeftPanel/HeaderLeft/ProgressIndicator
+@onready var chapters_scroll = $MainContainer/ContentArea/LeftPanel/ScrollContainer
+@onready var chapters_list = $MainContainer/ContentArea/LeftPanel/ScrollContainer/ChaptersList
 
-# Right Panel - Stage Details
-@onready var stages_panel = $MainContainer/RightPanel
-@onready var chapter_detail_title = $MainContainer/RightPanel/HeaderRight/ChapterDetailTitle
-@onready var chapter_description = $MainContainer/RightPanel/HeaderRight/ChapterDescription
-@onready var stages_scroll = $MainContainer/RightPanel/StagesContainer/StagesScrollContainer
-@onready var stages_list = $MainContainer/RightPanel/StagesContainer/StagesScrollContainer/StagesList
+# Right Panel - Stage Details - PATHS CORREGIDOS
+@onready var stages_panel = $MainContainer/ContentArea/RightPanel
+@onready var chapter_detail_title = $MainContainer/ContentArea/RightPanel/HeaderRight/ChapterDetailTitle
+@onready var chapter_description = $MainContainer/ContentArea/RightPanel/HeaderRight/ChapterDescription
+@onready var stages_scroll = $MainContainer/ContentArea/RightPanel/StagesContainer/StagesScrollContainer
+@onready var stages_list = $MainContainer/ContentArea/RightPanel/StagesContainer/StagesScrollContainer/StagesList
 
-# Bottom Panel
+# Bottom Panel - PATHS CORREGIDOS
 @onready var back_button = $MainContainer/BottomPanel/BackButton
 @onready var team_power_label = $MainContainer/BottomPanel/PlayerStatusContainer/TeamPowerLabel
 @onready var energy_label = $MainContainer/BottomPanel/PlayerStatusContainer/EnergyLabel
 
 # Sistemas
-var chapter_system: ChapterSystem
+var chapter_system # Puede ser ChapterSystem o EnhancedChapterSystem
 var game_manager: GameManager
 var main_controller: Control
 
@@ -61,10 +61,10 @@ func _initialize_systems():
 	# Obtener sistemas
 	if main_controller and main_controller.has_method("get_game_manager"):
 		game_manager = main_controller.get_game_manager()
-		chapter_system = main_controller.get_chapter_system()
+		chapter_system = main_controller.get_chapter_system()  # Será EnhancedChapterSystem
 	else:
 		game_manager = get_tree().get_first_node_in_group("game_manager")
-		chapter_system = get_tree().get_first_node_in_group("chapter_system")
+		chapter_system = get_tree().get_first_node_in_group("chapter_system")  # Puede ser cualquiera
 	
 	print("✓ Chapter Selection systems initialized")
 
@@ -81,6 +81,7 @@ func _setup_connections():
 func _populate_chapters():
 	"""Poblar la lista de capítulos"""
 	if not chapters_list or not chapter_system:
+		print("Error: chapters_list o chapter_system no disponible")
 		return
 	
 	current_mode = "chapters"

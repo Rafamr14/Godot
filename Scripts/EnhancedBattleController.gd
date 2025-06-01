@@ -1,4 +1,4 @@
-# ==== ENHANCED BATTLE CONTROLLER ====
+# ==== ENHANCED BATTLE CONTROLLER - CON DEBUG MEJORADO ====
 extends Control
 
 # Referencias UI principales
@@ -24,7 +24,7 @@ extends Control
 
 # Sistemas
 var battle_system: BattleSystem
-var enhanced_chapter_system: EnhancedChapterSystem
+var enhanced_chapter_system # Puede ser ChapterSystem o EnhancedChapterSystem
 var game_manager: GameManager
 var main_controller: Control
 
@@ -33,7 +33,7 @@ var current_chapter_id: int = 0
 var current_stage_id: int = 0
 var current_character: Character
 var selected_skill: Skill
-var available_targets: Array[Character] = []
+var available_targets: Array = []
 var battle_active: bool = false
 
 # Señales
@@ -47,11 +47,13 @@ func _ready():
 	print("EnhancedBattleController: Listo para la batalla!")
 
 func _initialize_systems():
+	print("EnhancedBattleController: Inicializando sistemas...")
 	await get_tree().process_frame
 	
 	# Buscar Main controller
 	main_controller = get_tree().get_first_node_in_group("main")
 	if not main_controller:
+		print("EnhancedBattleController: Main controller no encontrado, buscando por jerarquía...")
 		var current = get_parent()
 		while current and not main_controller:
 			if current.has_method("get_game_manager"):
@@ -61,56 +63,161 @@ func _initialize_systems():
 	
 	# Obtener sistemas
 	if main_controller and main_controller.has_method("get_game_manager"):
+		print("EnhancedBattleController: Obteniendo sistemas desde Main controller...")
 		game_manager = main_controller.get_game_manager()
 		battle_system = main_controller.get_battle_system()
 		enhanced_chapter_system = main_controller.get_chapter_system()
 	else:
+		print("EnhancedBattleController: Buscando sistemas directamente...")
 		game_manager = get_tree().get_first_node_in_group("game_manager")
 		battle_system = get_tree().get_first_node_in_group("battle_system")
 		enhanced_chapter_system = get_tree().get_first_node_in_group("chapter_system")
+	
+	# Verificar que se encontraron los sistemas
+	if game_manager:
+		print("EnhancedBattleController: ✓ GameManager encontrado")
+	else:
+		print("EnhancedBattleController: ✗ GameManager NO encontrado")
+	
+	if battle_system:
+		print("EnhancedBattleController: ✓ BattleSystem encontrado")
+	else:
+		print("EnhancedBattleController: ✗ BattleSystem NO encontrado")
+	
+	if enhanced_chapter_system:
+		print("EnhancedBattleController: ✓ ChapterSystem encontrado")
+	else:
+		print("EnhancedBattleController: ✗ ChapterSystem NO encontrado")
 	
 	print("✓ Enhanced Battle systems initialized")
 
 func _setup_ui():
 	"""Configurar interfaz de batalla"""
+	print("EnhancedBattleController: Configurando UI...")
+	
 	if combat_log:
 		_add_log_entry("⚔️ Battle system ready!")
+		print("EnhancedBattleController: ✓ Combat log configurado")
+	else:
+		print("EnhancedBattleController: ✗ Combat log NO encontrado")
 	
 	# Conectar señales del battle system
 	if battle_system:
+		print("EnhancedBattleController: Conectando señales del battle system...")
 		if battle_system.has_signal("turn_started"):
 			battle_system.turn_started.connect(_on_turn_started)
+			print("EnhancedBattleController: ✓ Señal turn_started conectada")
 		if battle_system.has_signal("skill_used"):
 			battle_system.skill_used.connect(_on_skill_used)
+			print("EnhancedBattleController: ✓ Señal skill_used conectada")
 		if battle_system.has_signal("battle_phase_changed"):
 			battle_system.battle_phase_changed.connect(_on_battle_phase_changed)
+			print("EnhancedBattleController: ✓ Señal battle_phase_changed conectada")
+	else:
+		print("EnhancedBattleController: ✗ No se pudo conectar señales - battle_system es null")
 
 func start_battle(chapter_id: int, stage_id: int):
 	"""Iniciar batalla específica"""
-	print("Starting battle: Chapter ", chapter_id, " Stage ", stage_id)
+	print("EnhancedBattleController: Starting battle: Chapter ", chapter_id, " Stage ", stage_id)
+	
+	# Verificar sistemas críticos
+	if not enhanced_chapter_system:
+		print("ERROR: enhanced_chapter_system es null!")
+		_show_error("Chapter system not available!")
+		return
+	
+	if not battle_system:
+		print("ERROR: battle_system es null!")
+		_show_error("Battle system not available!")
+		return
+	
+	if not game_manager:
+		print("ERROR: game_manager es null!")
+		_show_error("Game manager not available!")
+		return
 	
 	current_chapter_id = chapter_id
 	current_stage_id = stage_id
 	battle_active = true
 	
 	# Obtener datos del stage
+	print("EnhancedBattleController: Obteniendo datos del stage...")
 	var stage_data = enhanced_chapter_system.get_stage_data(chapter_id, stage_id)
 	if not stage_data:
+		print("ERROR: No se pudieron obtener los datos del stage!")
 		_show_error("Stage data not found!")
 		return
 	
+	print("EnhancedBattleController: ✓ Stage data obtenido: ", stage_data)
+	
 	# Configurar header de batalla
 	if battle_header:
-		battle_header.text = "⚔️ " + stage_data.stage_name
+		if stage_data is Dictionary:
+			battle_header.text = "⚔️ " + str(stage_data.get("stage_name", "Stage " + str(stage_id)))
+		elif stage_data is StageData and stage_data.stage_name:
+			battle_header.text = "⚔️ " + stage_data.stage_name
+		else:
+			battle_header.text = "⚔️ Battle Stage " + str(stage_id)
+		print("EnhancedBattleController: ✓ Header configurado: ", battle_header.text)
+	
+	# Convertir enemies a Array genérico
+	print("EnhancedBattleController: Procesando enemies...")
+	var enemies_array: Array = []
+	
+	if stage_data is Dictionary:
+		print("EnhancedBattleController: Stage data es Dictionary")
+		var enemies_data = stage_data.get("enemies", [])
+		print("EnhancedBattleController: Enemies data: ", enemies_data)
+		for enemy in enemies_data:
+			if enemy is Character:
+				enemies_array.append(enemy)
+				print("EnhancedBattleController: ✓ Enemy añadido: ", enemy.character_name)
+			else:
+				print("EnhancedBattleController: ✗ Enemy no es Character: ", enemy)
+	elif stage_data is StageData:
+		print("EnhancedBattleController: Stage data es StageData")
+		if stage_data.enemies:
+			print("EnhancedBattleController: Enemies: ", stage_data.enemies)
+			for enemy in stage_data.enemies:
+				if enemy is Character:
+					enemies_array.append(enemy)
+					print("EnhancedBattleController: ✓ Enemy añadido: ", enemy.character_name)
+				else:
+					print("EnhancedBattleController: ✗ Enemy no es Character: ", enemy)
+		else:
+			print("EnhancedBattleController: ✗ No hay enemies en stage_data")
+	else:
+		print("EnhancedBattleController: ERROR - Tipo de stage_data no reconocido: ", typeof(stage_data))
+		_show_error("Invalid stage data format!")
+		return
+	
+	print("EnhancedBattleController: Enemies array final: ", enemies_array.size(), " enemies")
+	
+	if enemies_array.is_empty():
+		print("ERROR: No hay enemies válidos para la batalla!")
+		_show_error("No enemies found for this stage!")
+		return
+	
+	# Verificar equipo del jugador
+	if game_manager.player_team.is_empty():
+		print("ERROR: El equipo del jugador está vacío!")
+		_show_error("Player team is empty!")
+		return
+	
+	print("EnhancedBattleController: Starting battle with ", game_manager.player_team.size(), " heroes vs ", enemies_array.size(), " enemies")
 	
 	# Iniciar el battle system
-	if battle_system and game_manager:
-		battle_system.start_battle(game_manager.player_team, stage_data.enemies)
-		_add_log_entry("🌟 Battle begins: " + stage_data.stage_name)
-		_update_team_displays()
+	print("EnhancedBattleController: Llamando battle_system.start_battle()...")
+	battle_system.start_battle(game_manager.player_team, enemies_array)
+	print("EnhancedBattleController: ✓ Battle system iniciado exitosamente")
+	
+	_add_log_entry("🌟 Battle begins!")
+	_update_team_displays()
+	print("EnhancedBattleController: ✓ UI actualizada")
 
 func _on_turn_started(character: Character):
 	"""Manejar inicio de turno"""
+	print("EnhancedBattleController: Turn started for: ", character.character_name)
 	current_character = character
 	
 	# Actualizar indicador de turno
@@ -202,9 +309,9 @@ func _on_skill_selected(skill: Skill):
 		# Mostrar selección de targets
 		_show_target_selection()
 
-func _get_valid_targets(skill: Skill) -> Array[Character]:
+func _get_valid_targets(skill: Skill) -> Array:
 	"""Obtener targets válidos para un skill"""
-	var targets: Array[Character] = []
+	var targets: Array = []
 	
 	if not game_manager:
 		return targets
@@ -263,7 +370,7 @@ func _create_target_button(target: Character, index: int) -> Button:
 	
 	return button
 
-func _execute_skill(targets: Array[Character]):
+func _execute_skill(targets: Array):
 	"""Ejecutar skill seleccionado"""
 	if not battle_system or not selected_skill or not current_character:
 		return
@@ -277,7 +384,7 @@ func _execute_skill(targets: Array[Character]):
 	# Ejecutar a través del battle system
 	battle_system.execute_skill(current_character, selected_skill, targets)
 
-func _on_skill_used(caster: Character, skill: Skill, targets: Array[Character], results: Array):
+func _on_skill_used(caster: Character, skill: Skill, targets: Array, results: Array):
 	"""Manejar uso de skill"""
 	print("Skill used: ", caster.character_name, " -> ", skill.skill_name)
 	
@@ -316,6 +423,7 @@ func _on_skill_used(caster: Character, skill: Skill, targets: Array[Character], 
 
 func _on_battle_phase_changed(phase):
 	"""Manejar cambio de fase de batalla"""
+	print("Battle phase changed to: ", phase)
 	match phase:
 		BattleSystem.BattlePhase.VICTORY:
 			_handle_victory()
@@ -347,21 +455,29 @@ func _handle_defeat():
 	_show_defeat_screen()
 	battle_finished.emit(false)
 
-func _show_victory_screen(rewards: StageRewards):
+func _show_victory_screen(rewards):
 	"""Mostrar pantalla de victoria"""
 	var victory_popup = AcceptDialog.new()
 	victory_popup.title = "🎉 VICTORY!"
 	
 	var reward_text = "Stage completed successfully!\n\n"
 	reward_text += "Rewards:\n"
-	reward_text += "💰 Gold: " + str(rewards.gold) + "\n"
-	reward_text += "⭐ Experience: " + str(rewards.experience) + "\n"
 	
-	if rewards.summon_tickets > 0:
-		reward_text += "🎫 Summon Tickets: " + str(rewards.summon_tickets) + "\n"
-	
-	if rewards.guaranteed_character:
-		reward_text += "🌟 Hero Obtained: " + rewards.guaranteed_character.character_name + "\n"
+	if rewards:
+		if rewards.has_method("get"):
+			# Es un diccionario
+			reward_text += "💰 Gold: " + str(rewards.get("gold", 0)) + "\n"
+			reward_text += "⭐ Experience: " + str(rewards.get("experience", 0)) + "\n"
+		else:
+			# Es un StageRewards
+			reward_text += "💰 Gold: " + str(rewards.gold) + "\n"
+			reward_text += "⭐ Experience: " + str(rewards.experience) + "\n"
+			
+			if rewards.summon_tickets > 0:
+				reward_text += "🎫 Summon Tickets: " + str(rewards.summon_tickets) + "\n"
+			
+			if rewards.guaranteed_character:
+				reward_text += "🌟 Hero Obtained: " + rewards.guaranteed_character.character_name + "\n"
 	
 	victory_popup.dialog_text = reward_text
 	add_child(victory_popup)
@@ -391,7 +507,7 @@ func _update_team_displays():
 		_update_team_container(player_team_container, game_manager.player_team, true)
 		_update_team_container(enemy_team_container, game_manager.enemy_team, false)
 
-func _update_team_container(container: Control, team: Array[Character], is_player_team: bool):
+func _update_team_container(container: Control, team: Array, is_player_team: bool):
 	"""Actualizar contenedor de equipo"""
 	if not container:
 		return
@@ -404,8 +520,9 @@ func _update_team_container(container: Control, team: Array[Character], is_playe
 	
 	# Crear displays para cada personaje
 	for character in team:
-		var char_display = _create_character_display(character, is_player_team)
-		container.add_child(char_display)
+		if character is Character:
+			var char_display = _create_character_display(character, is_player_team)
+			container.add_child(char_display)
 
 func _create_character_display(character: Character, is_player: bool) -> Control:
 	"""Crear display de personaje"""
@@ -464,26 +581,6 @@ func _create_character_display(character: Character, is_player: bool) -> Control
 	cr_text.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	display.add_child(cr_text)
 	
-	# Efectos de estado
-	var effects_container = HBoxContainer.new()
-	effects_container.alignment = BoxContainer.ALIGNMENT_CENTER
-	display.add_child(effects_container)
-	
-	# Mostrar buffs/debuffs
-	for buff in character.buffs:
-		var buff_icon = Label.new()
-		buff_icon.text = "+"
-		buff_icon.modulate = Color.GREEN
-		buff_icon.add_theme_font_size_override("font_size", 12)
-		effects_container.add_child(buff_icon)
-	
-	for debuff in character.debuffs:
-		var debuff_icon = Label.new()
-		debuff_icon.text = "-"
-		debuff_icon.modulate = Color.RED
-		debuff_icon.add_theme_font_size_override("font_size", 12)
-		effects_container.add_child(debuff_icon)
-	
 	# Dim si está muerto
 	if not character.is_alive():
 		display.modulate = Color(0.5, 0.5, 0.5, 1)
@@ -505,14 +602,19 @@ func _update_speed_bar():
 	
 	# Limpiar barra anterior
 	for child in speed_bar_container.get_children():
-		child.queue_free()
+		if child.name != "SpeedBarTitle":  # Preservar el título
+			child.queue_free()
 	
 	await get_tree().process_frame
 	
 	# Obtener todos los personajes vivos ordenados por CR
-	var all_chars: Array[Character] = []
-	all_chars.append_array(game_manager.player_team.filter(func(char): return char.is_alive()))
-	all_chars.append_array(game_manager.enemy_team.filter(func(char): return char.is_alive()))
+	var all_chars: Array = []
+	for char in game_manager.player_team:
+		if char is Character and char.is_alive():
+			all_chars.append(char)
+	for char in game_manager.enemy_team:
+		if char is Character and char.is_alive():
+			all_chars.append(char)
 	
 	all_chars.sort_custom(func(a, b): return a.combat_readiness > b.combat_readiness)
 	
@@ -556,11 +658,12 @@ func _create_speed_icon(character: Character) -> Control:
 	icon.add_child(bg)
 	icon.move_child(bg, 0)
 	
-	return icon
+	return bg
 
 func _add_log_entry(text: String):
 	"""Agregar entrada al log de combate"""
 	if not combat_log:
+		print("Combat log not available: ", text)
 		return
 	
 	var log_label = Label.new()
@@ -576,12 +679,16 @@ func _add_log_entry(text: String):
 
 func _show_error(message: String):
 	"""Mostrar mensaje de error"""
+	print("ERROR: ", message)
 	var popup = AcceptDialog.new()
 	popup.dialog_text = message
 	popup.title = "Error"
 	add_child(popup)
 	popup.popup_centered()
-	popup.confirmed.connect(func(): popup.queue_free())
+	popup.confirmed.connect(func(): 
+		popup.queue_free()
+		back_to_chapters.emit()
+	)
 
 # ==== FUNCIONES PÚBLICAS ====
 func get_battle_active() -> bool:
@@ -589,5 +696,6 @@ func get_battle_active() -> bool:
 
 func force_end_battle():
 	"""Forzar fin de batalla"""
+	print("EnhancedBattleController: Force ending battle")
 	battle_active = false
 	back_to_chapters.emit()
