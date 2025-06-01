@@ -1,4 +1,4 @@
-# ==== ENHANCED BATTLE CONTROLLER - CON DEBUG MEJORADO ====
+# ==== ENHANCED BATTLE CONTROLLER - CORREGIDO ====
 extends Control
 
 # Referencias UI principales
@@ -105,14 +105,17 @@ func _setup_ui():
 	if battle_system:
 		print("EnhancedBattleController: Conectando señales del battle system...")
 		if battle_system.has_signal("turn_started"):
-			battle_system.turn_started.connect(_on_turn_started)
-			print("EnhancedBattleController: ✓ Señal turn_started conectada")
+			if not battle_system.turn_started.is_connected(_on_turn_started):
+				battle_system.turn_started.connect(_on_turn_started)
+				print("EnhancedBattleController: ✓ Señal turn_started conectada")
 		if battle_system.has_signal("skill_used"):
-			battle_system.skill_used.connect(_on_skill_used)
-			print("EnhancedBattleController: ✓ Señal skill_used conectada")
+			if not battle_system.skill_used.is_connected(_on_skill_used):
+				battle_system.skill_used.connect(_on_skill_used)
+				print("EnhancedBattleController: ✓ Señal skill_used conectada")
 		if battle_system.has_signal("battle_phase_changed"):
-			battle_system.battle_phase_changed.connect(_on_battle_phase_changed)
-			print("EnhancedBattleController: ✓ Señal battle_phase_changed conectada")
+			if not battle_system.battle_phase_changed.is_connected(_on_battle_phase_changed):
+				battle_system.battle_phase_changed.connect(_on_battle_phase_changed)
+				print("EnhancedBattleController: ✓ Señal battle_phase_changed conectada")
 	else:
 		print("EnhancedBattleController: ✗ No se pudo conectar señales - battle_system es null")
 
@@ -160,7 +163,16 @@ func start_battle(chapter_id: int, stage_id: int):
 			battle_header.text = "⚔️ Battle Stage " + str(stage_id)
 		print("EnhancedBattleController: ✓ Header configurado: ", battle_header.text)
 	
-	# Convertir enemies a Array genérico
+	# Obtener equipo del jugador como Array genérico
+	print("EnhancedBattleController: Obteniendo equipo del jugador...")
+	var player_team_array: Array = []
+	for character in game_manager.player_team:
+		if character != null and character is Character:
+			player_team_array.append(character)
+	
+	print("EnhancedBattleController: Player team: ", player_team_array.size(), " characters")
+	
+	# Procesar enemies del stage
 	print("EnhancedBattleController: Procesando enemies...")
 	var enemies_array: Array = []
 	
@@ -169,7 +181,7 @@ func start_battle(chapter_id: int, stage_id: int):
 		var enemies_data = stage_data.get("enemies", [])
 		print("EnhancedBattleController: Enemies data: ", enemies_data)
 		for enemy in enemies_data:
-			if enemy is Character:
+			if enemy != null and enemy is Character:
 				enemies_array.append(enemy)
 				print("EnhancedBattleController: ✓ Enemy añadido: ", enemy.character_name)
 			else:
@@ -179,7 +191,7 @@ func start_battle(chapter_id: int, stage_id: int):
 		if stage_data.enemies:
 			print("EnhancedBattleController: Enemies: ", stage_data.enemies)
 			for enemy in stage_data.enemies:
-				if enemy is Character:
+				if enemy != null and enemy is Character:
 					enemies_array.append(enemy)
 					print("EnhancedBattleController: ✓ Enemy añadido: ", enemy.character_name)
 				else:
@@ -199,21 +211,33 @@ func start_battle(chapter_id: int, stage_id: int):
 		return
 	
 	# Verificar equipo del jugador
-	if game_manager.player_team.is_empty():
+	if player_team_array.is_empty():
 		print("ERROR: El equipo del jugador está vacío!")
 		_show_error("Player team is empty!")
 		return
 	
-	print("EnhancedBattleController: Starting battle with ", game_manager.player_team.size(), " heroes vs ", enemies_array.size(), " enemies")
+	print("EnhancedBattleController: Starting battle with ", player_team_array.size(), " heroes vs ", enemies_array.size(), " enemies")
 	
-	# Iniciar el battle system
+	# Iniciar el battle system con arrays genéricos
 	print("EnhancedBattleController: Llamando battle_system.start_battle()...")
-	battle_system.start_battle(game_manager.player_team, enemies_array)
-	print("EnhancedBattleController: ✓ Battle system iniciado exitosamente")
+	# FIXED: Removed try/except which doesn't exist in GDScript
+	var battle_started = false
+	if battle_system.has_method("start_battle"):
+		battle_system.start_battle(player_team_array, enemies_array)
+		battle_started = true
+	else:
+		print("ERROR: battle_system no tiene método start_battle")
+		_show_error("Battle system is not properly configured!")
+		return
 	
-	_add_log_entry("🌟 Battle begins!")
-	_update_team_displays()
-	print("EnhancedBattleController: ✓ UI actualizada")
+	if battle_started:
+		print("EnhancedBattleController: ✓ Battle system iniciado exitosamente")
+		_add_log_entry("🌟 Battle begins!")
+		_update_team_displays()
+		print("EnhancedBattleController: ✓ UI actualizada")
+	else:
+		print("ERROR: No se pudo iniciar el battle system")
+		_show_error("Failed to start battle!")
 
 func _on_turn_started(character: Character):
 	"""Manejar inicio de turno"""
@@ -254,8 +278,9 @@ func _show_player_skills():
 	# Crear botones de skills
 	for i in range(current_character.skills.size()):
 		var skill = current_character.skills[i]
-		var skill_button = _create_skill_button(skill, i)
-		skills_container.add_child(skill_button)
+		if skill != null:
+			var skill_button = _create_skill_button(skill, i)
+			skills_container.add_child(skill_button)
 
 func _create_skill_button(skill: Skill, index: int) -> Button:
 	"""Crear botón de skill"""
@@ -318,13 +343,21 @@ func _get_valid_targets(skill: Skill) -> Array:
 	
 	match skill.target_type:
 		Skill.TargetType.SINGLE_ENEMY:
-			targets = game_manager.enemy_team.filter(func(char): return char.is_alive())
+			for char in game_manager.enemy_team:
+				if char != null and char is Character and char.is_alive():
+					targets.append(char)
 		Skill.TargetType.ALL_ENEMIES:
-			targets = game_manager.enemy_team.filter(func(char): return char.is_alive())
+			for char in game_manager.enemy_team:
+				if char != null and char is Character and char.is_alive():
+					targets.append(char)
 		Skill.TargetType.SINGLE_ALLY:
-			targets = game_manager.player_team.filter(func(char): return char.is_alive())
+			for char in game_manager.player_team:
+				if char != null and char is Character and char.is_alive():
+					targets.append(char)
 		Skill.TargetType.ALL_ALLIES:
-			targets = game_manager.player_team.filter(func(char): return char.is_alive())
+			for char in game_manager.player_team:
+				if char != null and char is Character and char.is_alive():
+					targets.append(char)
 		Skill.TargetType.SELF:
 			targets = [current_character]
 	
@@ -382,7 +415,10 @@ func _execute_skill(targets: Array):
 	print("Executing skill: ", selected_skill.skill_name, " on ", targets.size(), " targets")
 	
 	# Ejecutar a través del battle system
-	battle_system.execute_skill(current_character, selected_skill, targets)
+	if battle_system.has_method("player_use_skill"):
+		battle_system.player_use_skill(current_character, selected_skill, targets)
+	else:
+		battle_system.execute_skill(current_character, selected_skill, targets)
 
 func _on_skill_used(caster: Character, skill: Skill, targets: Array, results: Array):
 	"""Manejar uso de skill"""
@@ -393,10 +429,7 @@ func _on_skill_used(caster: Character, skill: Skill, targets: Array, results: Ar
 	_add_log_entry(log_entry)
 	
 	# Procesar resultados
-	for i in range(results.size()):
-		if i >= targets.size():
-			break
-			
+	for i in range(min(results.size(), targets.size())):
 		var result = results[i]
 		var target = targets[i]
 		
@@ -416,7 +449,8 @@ func _on_skill_used(caster: Character, skill: Skill, targets: Array, results: Ar
 		
 		# Efectos aplicados
 		for effect in result.effects_applied:
-			_add_log_entry("✨ " + effect.effect_name + " applied to " + target.character_name)
+			if effect != null:
+				_add_log_entry("✨ " + effect.effect_name + " applied to " + target.character_name)
 	
 	# Actualizar displays
 	_update_team_displays()
@@ -440,6 +474,10 @@ func _handle_victory():
 		var rewards = enhanced_chapter_system.complete_stage(current_chapter_id, current_stage_id, true)
 		if rewards:
 			_show_victory_screen(rewards)
+		else:
+			_show_simple_victory_screen()
+	else:
+		_show_simple_victory_screen()
 	
 	battle_finished.emit(true)
 
@@ -488,6 +526,19 @@ func _show_victory_screen(rewards):
 		back_to_chapters.emit()
 	)
 
+func _show_simple_victory_screen():
+	"""Mostrar pantalla de victoria simple"""
+	var victory_popup = AcceptDialog.new()
+	victory_popup.title = "🎉 VICTORY!"
+	victory_popup.dialog_text = "Stage completed successfully!\n\nYour heroes have triumphed!"
+	add_child(victory_popup)
+	victory_popup.popup_centered()
+	
+	victory_popup.confirmed.connect(func(): 
+		victory_popup.queue_free()
+		back_to_chapters.emit()
+	)
+
 func _show_defeat_screen():
 	"""Mostrar pantalla de derrota"""
 	var defeat_popup = AcceptDialog.new()
@@ -520,7 +571,7 @@ func _update_team_container(container: Control, team: Array, is_player_team: boo
 	
 	# Crear displays para cada personaje
 	for character in team:
-		if character is Character:
+		if character != null and character is Character:
 			var char_display = _create_character_display(character, is_player_team)
 			container.add_child(char_display)
 
@@ -610,10 +661,10 @@ func _update_speed_bar():
 	# Obtener todos los personajes vivos ordenados por CR
 	var all_chars: Array = []
 	for char in game_manager.player_team:
-		if char is Character and char.is_alive():
+		if char != null and char is Character and char.is_alive():
 			all_chars.append(char)
 	for char in game_manager.enemy_team:
-		if char is Character and char.is_alive():
+		if char != null and char is Character and char.is_alive():
 			all_chars.append(char)
 	
 	all_chars.sort_custom(func(a, b): return a.combat_readiness > b.combat_readiness)
@@ -658,7 +709,7 @@ func _create_speed_icon(character: Character) -> Control:
 	icon.add_child(bg)
 	icon.move_child(bg, 0)
 	
-	return bg
+	return icon
 
 func _add_log_entry(text: String):
 	"""Agregar entrada al log de combate"""

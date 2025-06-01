@@ -36,17 +36,17 @@ var effectiveness: float
 var effect_resistance: float
 var elemental_mastery: float
 
-# Sistema de Skills y Combat Readiness
-@export var skills: Array[Skill] = []
+# Sistema de Skills y Combat Readiness - CORREGIDO: Array genérico
+@export var skills: Array = []  # Array genérico en lugar de Array[Skill]
 var combat_readiness: float = 0.0  # 0-100, cuando llega a 100 es tu turno
-var buffs: Array[StatusEffect] = []
-var debuffs: Array[StatusEffect] = []
+var buffs: Array = []  # Array genérico de StatusEffect
+var debuffs: Array = []  # Array genérico de StatusEffect
 
 # Equipamiento (para futuro)
 var weapon: Equipment
 var armor: Equipment
 var accessory: Equipment
-var boots: Equipment  # Agregar boots que faltaba
+var boots: Equipment
 
 func setup(name: String, lvl: int, rar: Rarity, elem: Element, hp: int, atk: int, def: int, spd: int, crit_c: float = 0.15, crit_d: float = 1.5):
 	character_name = name
@@ -83,24 +83,37 @@ func _calculate_stats():
 
 func _apply_status_effects():
 	for buff in buffs:
-		buff.apply_effect(self)
+		if buff != null and buff.has_method("apply_effect"):
+			buff.apply_effect(self)
 
 func _setup_default_skills():
+	# Limpiar skills existentes
+	skills.clear()
+	
+	# Skill 1: Ataque básico
 	var s1 = Skill.new()
-	s1.setup("Basic Attack", 0, Skill.SkillType.DAMAGE, Skill.TargetType.SINGLE_ENEMY, 1.0, element)
-	s1.description = "Deal damage to one enemy"
+	if s1:
+		s1.setup("Basic Attack", 0, Skill.SkillType.DAMAGE, Skill.TargetType.SINGLE_ENEMY, 1.0, element)
+		s1.description = "Deal damage to one enemy"
+		skills.append(s1)
 	
+	# Skill 2: Ataque fuerte
 	var s2 = Skill.new()
-	s2.setup("Power Strike", 0, Skill.SkillType.DAMAGE, Skill.TargetType.SINGLE_ENEMY, 1.3, element)
-	s2.cooldown = 3
-	s2.description = "Deal increased damage to one enemy"
+	if s2:
+		s2.setup("Power Strike", 0, Skill.SkillType.DAMAGE, Skill.TargetType.SINGLE_ENEMY, 1.3, element)
+		s2.cooldown = 3
+		s2.description = "Deal increased damage to one enemy"
+		skills.append(s2)
 	
+	# Skill 3: Ultimate
 	var s3 = Skill.new()
-	s3.setup("Ultimate", 0, Skill.SkillType.DAMAGE, Skill.TargetType.ALL_ENEMIES, 1.8, element)
-	s3.cooldown = 5
-	s3.description = "Deal massive damage to all enemies"
+	if s3:
+		s3.setup("Ultimate", 0, Skill.SkillType.DAMAGE, Skill.TargetType.ALL_ENEMIES, 1.8, element)
+		s3.cooldown = 5
+		s3.description = "Deal massive damage to all enemies"
+		skills.append(s3)
 	
-	skills = [s1, s2, s3]
+	print("Character: ", character_name, " setup with ", skills.size(), " skills")
 
 func take_damage(damage: int, is_crit: bool = false, damage_element: Element = Element.WATER) -> DamageResult:
 	var result = DamageResult.new()
@@ -119,7 +132,7 @@ func take_damage(damage: int, is_crit: bool = false, damage_element: Element = E
 	
 	# Resistencias de buffs/debuffs
 	for buff in buffs:
-		if buff.effect_type == StatusEffect.EffectType.DAMAGE_REDUCTION:
+		if buff != null and buff.effect_type == StatusEffect.EffectType.DAMAGE_REDUCTION:
 			final_damage = int(final_damage * (1.0 - buff.value))
 	
 	current_hp = max(0, current_hp - final_damage)
@@ -156,6 +169,9 @@ func reset_combat_readiness():
 	combat_readiness = 0.0
 
 func add_status_effect(effect: StatusEffect) -> bool:
+	if not effect:
+		return false
+		
 	# Verificar resistencia
 	if effect.is_debuff and randf() < effect_resistance:
 		return false  # Resistió el efecto
@@ -170,15 +186,19 @@ func add_status_effect(effect: StatusEffect) -> bool:
 func process_status_effects():
 	# Procesar buffs
 	for i in range(buffs.size() - 1, -1, -1):
-		buffs[i].duration -= 1
-		if buffs[i].duration <= 0:
-			buffs.remove_at(i)
+		var buff = buffs[i]
+		if buff != null:
+			buff.duration -= 1
+			if buff.duration <= 0:
+				buffs.remove_at(i)
 	
 	# Procesar debuffs
 	for i in range(debuffs.size() - 1, -1, -1):
-		debuffs[i].duration -= 1
-		if debuffs[i].duration <= 0:
-			debuffs.remove_at(i)
+		var debuff = debuffs[i]
+		if debuff != null:
+			debuff.duration -= 1
+			if debuff.duration <= 0:
+				debuffs.remove_at(i)
 
 func get_rarity_color() -> Color:
 	match rarity:
@@ -213,3 +233,34 @@ func duplicate_character() -> Character:
 	new_character.character_type = character_type
 	new_character.character_class = character_class
 	return new_character
+
+# Función de debug para verificar el estado del personaje
+func debug_print():
+	print("=== CHARACTER DEBUG: ", character_name, " ===")
+	print("Level: ", level, " | Type: ", CharacterType.keys()[character_type])
+	print("HP: ", current_hp, "/", max_hp)
+	print("ATK: ", attack, " | DEF: ", defense, " | SPD: ", speed)
+	print("Element: ", get_element_name(), " | Rarity: ", Rarity.keys()[rarity])
+	print("Combat Readiness: ", combat_readiness)
+	print("Skills: ", skills.size())
+	for i in range(skills.size()):
+		var skill = skills[i]
+		if skill != null:
+			print("  ", i+1, ": ", skill.skill_name, " (CD: ", skill.current_cooldown, "/", skill.cooldown, ")")
+		else:
+			print("  ", i+1, ": NULL SKILL")
+	print("Buffs: ", buffs.size(), " | Debuffs: ", debuffs.size())
+	print("=====================================")
+
+# Función para validar la integridad del personaje
+func is_valid() -> bool:
+	if character_name.is_empty():
+		return false
+	if max_hp <= 0 or attack <= 0 or speed <= 0:
+		return false
+	if skills.is_empty():
+		return false
+	for skill in skills:
+		if skill == null:
+			return false
+	return true
