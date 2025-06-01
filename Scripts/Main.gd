@@ -1,32 +1,31 @@
-# ==== MAIN CONTROLLER ARREGLADO (Main.gd) ====
-# Maneja navegación entre escenas e inicialización mejorada
+# ==== MAIN CONTROLLER UPDATED FOR ENHANCED CHAPTER SYSTEM ====
 extends Control
 
-# Sistemas principales (autoload o nodos)
+# Sistemas principales
 var game_manager: GameManager
 var enhanced_gacha_system: EnhancedGachaSystem
 var battle_system: BattleSystem
-var chapter_system: ChapterSystem
+var enhanced_chapter_system: EnhancedChapterSystem
 var character_menu_system: CharacterMenuSystem
 var equipment_manager: EquipmentManager
 
-# Referencias a UI desde la escena
+# Referencias UI
 @onready var main_menu = $MainMenu
 
 # Estado actual
 var current_screen: String = "main_menu"
 
 func _ready():
-	print("=== STARTING GAME INITIALIZATION ===")
-	add_to_group("main")  # Añadir al grupo para que otros sistemas nos encuentren
+	print("=== STARTING ENHANCED GAME INITIALIZATION ===")
+	add_to_group("main")
 	_initialize_systems()
 	_setup_main_menu_connections()
-	await _initialize_characters_properly()  # MEJORADO: Mejor inicialización de personajes
+	await _initialize_characters_properly()
 	_update_main_menu_display()
-	print("Game initialization complete!")
+	print("Enhanced game initialization complete!")
 
 func _initialize_systems():
-	print("Initializing core systems...")
+	print("Initializing enhanced core systems...")
 	
 	# Sistemas que ya existen en la escena
 	game_manager = $GameManager
@@ -35,16 +34,17 @@ func _initialize_systems():
 	if game_manager:
 		game_manager.add_to_group("game_manager")
 	
-	# Crear sistemas faltantes
+	# Crear sistemas mejorados
 	enhanced_gacha_system = EnhancedGachaSystem.new()
 	enhanced_gacha_system.name = "EnhancedGachaSystem"
 	enhanced_gacha_system.add_to_group("gacha_system")
 	add_child(enhanced_gacha_system)
 	
-	chapter_system = ChapterSystem.new()
-	chapter_system.name = "ChapterSystem"
-	chapter_system.add_to_group("chapter_system")
-	add_child(chapter_system)
+	# USAR EL SISTEMA MEJORADO DE CAPÍTULOS
+	enhanced_chapter_system = EnhancedChapterSystem.new()
+	enhanced_chapter_system.name = "EnhancedChapterSystem"
+	enhanced_chapter_system.add_to_group("chapter_system")
+	add_child(enhanced_chapter_system)
 	
 	character_menu_system = CharacterMenuSystem.new()
 	character_menu_system.name = "CharacterMenuSystem"
@@ -55,7 +55,7 @@ func _initialize_systems():
 	equipment_manager.name = "EquipmentManager"
 	add_child(equipment_manager)
 	
-	print("✓ All systems initialized")
+	print("✓ All enhanced systems initialized")
 
 func _setup_main_menu_connections():
 	if not main_menu:
@@ -186,30 +186,30 @@ func _generate_essential_characters():
 			dir.make_dir_recursive("Data/Characters")
 			print("Main: ✓ Carpeta Data/Characters creada")
 	
-	# Personajes esenciales para empezar
+	# Personajes esenciales más poderosos para las nuevas batallas épicas
 	var essential_data = [
-		{"name": "Starter Knight", "element": Character.Element.RADIANT, "rarity": Character.Rarity.COMMON, "hp": 130, "attack": 25, "defense": 20, "speed": 70},
-		{"name": "Starter Mage", "element": Character.Element.FIRE, "rarity": Character.Rarity.COMMON, "hp": 90, "attack": 30, "defense": 12, "speed": 85},
-		{"name": "Starter Healer", "element": Character.Element.WATER, "rarity": Character.Rarity.COMMON, "hp": 110, "attack": 20, "defense": 18, "speed": 80},
-		{"name": "Forest Guardian", "element": Character.Element.EARTH, "rarity": Character.Rarity.RARE, "hp": 150, "attack": 28, "defense": 25, "speed": 65},
-		{"name": "Flame Warrior", "element": Character.Element.FIRE, "rarity": Character.Rarity.RARE, "hp": 120, "attack": 35, "defense": 15, "speed": 90}
+		{"name": "Epic Starter Knight", "element": Character.Element.RADIANT, "rarity": Character.Rarity.RARE, "hp": 180, "attack": 35, "defense": 25, "speed": 70},
+		{"name": "Epic Fire Mage", "element": Character.Element.FIRE, "rarity": Character.Rarity.RARE, "hp": 140, "attack": 45, "defense": 18, "speed": 85},
+		{"name": "Epic Water Healer", "element": Character.Element.WATER, "rarity": Character.Rarity.RARE, "hp": 160, "attack": 30, "defense": 22, "speed": 80},
+		{"name": "Epic Earth Guardian", "element": Character.Element.EARTH, "rarity": Character.Rarity.EPIC, "hp": 220, "attack": 28, "defense": 35, "speed": 65},
+		{"name": "Epic Void Assassin", "element": Character.Element.VOID, "rarity": Character.Rarity.EPIC, "hp": 130, "attack": 55, "defense": 15, "speed": 95}
 	]
 	
 	for data in essential_data:
 		var character = Character.new()
-		var level = randi_range(1, 3)
+		var level = randi_range(2, 4)  # Nivel más alto para las nuevas batallas
 		
 		character.setup(
 			data.name,
 			level,
 			data.rarity,
 			data.element,
-			data.hp + (level - 1) * 10,
-			data.attack + (level - 1) * 4,
-			data.defense + (level - 1) * 3,
-			data.speed + (level - 1) * 2,
-			0.15 + randf() * 0.05,
-			1.5 + randf() * 0.2
+			data.hp + (level - 1) * 12,
+			data.attack + (level - 1) * 5,
+			data.defense + (level - 1) * 4,
+			data.speed + (level - 1) * 3,
+			0.15 + randf() * 0.08,
+			1.5 + randf() * 0.3
 		)
 		
 		# Agregar al inventario
@@ -224,7 +224,7 @@ func _generate_essential_characters():
 		else:
 			print("Main: ✗ Error guardando: ", character.character_name)
 	
-	print("Main: Personajes esenciales generados y guardados en Data/Characters/")
+	print("Main: Personajes épicos generados y guardados en Data/Characters/")
 
 # ==== NAVEGACIÓN PRINCIPAL ====
 func _navigate_to_screen(screen_name: String):
@@ -241,7 +241,7 @@ func _navigate_to_screen(screen_name: String):
 	# Cargar nueva escena
 	match screen_name:
 		"chapters":
-			_load_chapter_scene()
+			_load_enhanced_chapter_scene()
 		"team_formation":
 			_load_team_formation_scene()
 		"gacha":
@@ -249,7 +249,7 @@ func _navigate_to_screen(screen_name: String):
 		"inventory":
 			_load_inventory_scene()
 		"battle":
-			_load_battle_scene()
+			_load_enhanced_battle_scene()
 		"main_menu":
 			_show_main_menu()
 
@@ -263,21 +263,33 @@ func _clear_ui_scenes():
 	for node in nodes_to_remove:
 		node.queue_free()
 
-func _load_chapter_scene():
-	var scene = load("res://scenes/ChapterUI.tscn").instantiate()
+func _load_enhanced_chapter_scene():
+	"""Cargar la nueva escena de capítulos épica"""
+	var scene = load("res://scenes/ChapterSelectionUI.tscn").instantiate()
 	add_child(scene)
 	
-	# Conectar botón de back
+	# Conectar señales
 	if scene.has_signal("back_pressed"):
 		scene.back_pressed.connect(func(): _navigate_to_screen("main_menu"))
 	
-	# Conectar selección de stage
 	if scene.has_signal("stage_selected"):
 		scene.stage_selected.connect(_on_stage_selected)
 
+func _load_enhanced_battle_scene():
+	"""Cargar la nueva escena de batalla épica"""
+	var scene = load("res://scenes/EnhancedBattleUI.tscn").instantiate()
+	add_child(scene)
+	
+	# Conectar señales
+	if scene.has_signal("battle_finished"):
+		scene.battle_finished.connect(_on_battle_finished)
+	
+	if scene.has_signal("back_to_chapters"):
+		scene.back_to_chapters.connect(func(): _navigate_to_screen("chapters"))
+
 func _load_team_formation_scene():
 	var scene = load("res://scenes/TeamFormationUI.tscn").instantiate()
-	scene.add_to_group("team_formation")  # Agregar al grupo para fácil búsqueda
+	scene.add_to_group("team_formation")
 	add_child(scene)
 	
 	# Conectar señales
@@ -286,7 +298,7 @@ func _load_team_formation_scene():
 	if scene.has_signal("team_updated"):
 		scene.team_updated.connect(_update_main_menu_display)
 	
-	# NUEVO: Forzar recarga de personajes si es necesario
+	# Forzar recarga de personajes si es necesario
 	if scene.has_method("force_reload_characters"):
 		scene.force_reload_characters()
 
@@ -294,7 +306,6 @@ func _load_gacha_scene():
 	var scene = load("res://scenes/GachaUI.tscn").instantiate()
 	add_child(scene)
 	
-	# El GachaUIController manejará toda su lógica internamente
 	if scene.has_signal("back_pressed"):
 		scene.back_pressed.connect(func(): _navigate_to_screen("main_menu"))
 
@@ -302,53 +313,32 @@ func _load_inventory_scene():
 	var scene = load("res://scenes/InventoryUI.tscn").instantiate()
 	add_child(scene)
 	
-	# El InventoryUIController manejará toda su lógica internamente
 	if scene.has_signal("back_pressed"):
 		scene.back_pressed.connect(func(): _navigate_to_screen("main_menu"))
-	if scene.has_signal("character_selected"):
-		scene.character_selected.connect(_on_inventory_character_selected)
-
-func _on_inventory_character_selected(character: Character):
-	"""Manejar selección de personaje desde inventario"""
-	print("Character selected from inventory: ", character.character_name)
-	# El InventoryUIController maneja esto internamente ahora
-
-func _load_battle_scene():
-	var scene = load("res://scenes/BattleUI.tscn").instantiate()
-	add_child(scene)
-	
-	# El EnhancedBattleUI manejará toda su lógica internamente
-	if scene.has_signal("battle_exit"):
-		scene.battle_exit.connect(func(): _navigate_to_screen("chapters"))
 
 func _show_main_menu():
 	if main_menu:
 		main_menu.visible = true
 		_update_main_menu_display()
 
-# ==== EVENT HANDLERS ====
+# ==== EVENT HANDLERS MEJORADOS ====
 func _on_stage_selected(chapter_id: int, stage_id: int):
-	"""Manejar selección de stage - MEJORADO con verificación de equipo"""
-	print("Stage selected: Chapter ", chapter_id, " Stage ", stage_id)
+	"""Manejar selección de stage con el sistema mejorado"""
+	print("Epic Stage selected: Chapter ", chapter_id, " Stage ", stage_id)
 	
 	# Verificar que tenemos los sistemas necesarios
-	if not chapter_system or not game_manager:
+	if not enhanced_chapter_system or not game_manager:
 		_show_message("Game systems not ready!")
 		return
 	
-	var chapter_data = chapter_system.get_chapter_data(chapter_id)
-	if not chapter_data:
-		_show_message("Chapter data not found!")
-		return
-		
-	var stage_data = chapter_data.get_stage(stage_id)
+	var stage_data = enhanced_chapter_system.get_stage_data(chapter_id, stage_id)
 	if not stage_data:
 		_show_message("Stage data not found!")
 		return
 	
 	# Verificar que hay equipo configurado
 	if game_manager.player_team.is_empty():
-		_show_message("No team configured! This should have been handled earlier.")
+		_show_message("No team configured! Please set up your team first.")
 		return
 	
 	# Verificar que el equipo tiene personajes vivos
@@ -357,13 +347,38 @@ func _on_stage_selected(chapter_id: int, stage_id: int):
 		_show_message("All team members are defeated! Please heal them first.")
 		return
 	
-	# Todo OK - iniciar batalla
-	if battle_system:
-		print("Starting battle with team of ", game_manager.player_team.size(), " vs ", stage_data.enemies.size(), " enemies")
-		battle_system.start_battle(game_manager.player_team, stage_data.enemies)
-		_navigate_to_screen("battle")
+	# Todo OK - iniciar batalla épica
+	print("Starting epic battle with team of ", game_manager.player_team.size(), " vs ", stage_data.enemies.size(), " enemies")
+	
+	# Ir a la escena de batalla y configurarla
+	_navigate_to_screen("battle")
+	
+	# Esperar a que se cree la escena y luego iniciar batalla
+	await get_tree().process_frame
+	
+	var battle_scene = _find_current_battle_scene()
+	if battle_scene and battle_scene.has_method("start_battle"):
+		battle_scene.start_battle(chapter_id, stage_id)
+
+func _find_current_battle_scene() -> Control:
+	"""Encontrar la escena de batalla actual"""
+	for child in get_children():
+		if child.name == "EnhancedBattleUI" and child.has_method("start_battle"):
+			return child
+	return null
+
+func _on_battle_finished(victory: bool):
+	"""Manejar fin de batalla"""
+	print("Battle finished! Victory: ", victory)
+	
+	if victory:
+		print("Epic victory achieved!")
 	else:
-		_show_message("Battle system not ready!")
+		print("Heroes were defeated, but they'll return stronger!")
+	
+	# La batalla ya manejó las recompensas y actualización del progreso
+	# Solo necesitamos actualizar la UI principal
+	_update_main_menu_display()
 
 # ==== UI UPDATES ====
 func _update_main_menu_display():
@@ -405,7 +420,6 @@ func _show_message(text: String):
 	popup.confirmed.connect(func(): popup.queue_free())
 
 # ==== PUBLIC INTERFACE ====
-# Métodos para que otros sistemas accedan a los managers
 func get_game_manager() -> GameManager:
 	return game_manager
 
@@ -415,8 +429,8 @@ func get_gacha_system() -> EnhancedGachaSystem:
 func get_character_menu_system() -> CharacterMenuSystem:
 	return character_menu_system
 
-func get_chapter_system() -> ChapterSystem:
-	return chapter_system
+func get_chapter_system() -> EnhancedChapterSystem:
+	return enhanced_chapter_system
 
 func get_battle_system() -> BattleSystem:
 	return battle_system
@@ -431,16 +445,16 @@ func debug_print_character_status():
 		print("DEBUG: No GameManager")
 		return
 	
-	print("=== CHARACTER STATUS DEBUG ===")
+	print("=== ENHANCED CHARACTER STATUS DEBUG ===")
 	print("Inventory size: ", game_manager.player_inventory.size())
 	print("Team size: ", game_manager.player_team.size())
 	
-	print("Inventory characters:")
+	print("Epic Inventory characters:")
 	for i in range(game_manager.player_inventory.size()):
 		var char = game_manager.player_inventory[i]
-		print("  ", i + 1, ": ", char.character_name, " Lv.", char.level, " (", char.get_element_name(), ")")
+		print("  ", i + 1, ": ", char.character_name, " Lv.", char.level, " (", char.get_element_name(), ") Power:", _calculate_character_power(char))
 	
-	print("Team characters:")
+	print("Epic Team characters:")
 	for i in range(game_manager.player_team.size()):
 		var char = game_manager.player_team[i]
 		print("  ", i + 1, ": ", char.character_name, " Lv.", char.level, " Power:", _calculate_character_power(char))

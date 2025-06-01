@@ -1,0 +1,197 @@
+[gd_scene load_steps=2 format=3 uid="uid://doii7obpkkf2m"]
+
+[ext_resource type="Script" path="res://Scripts/ChapterSelectionController.gd" id="1_chapter"]
+
+[node name="ChapterSelectionUI" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_chapter")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.05, 0.05, 0.1, 1)
+
+[node name="BackgroundPattern" type="ColorRect" parent="Background"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.1, 0.1, 0.15, 0.2)
+
+[node name="MainContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 30.0
+offset_top = 30.0
+offset_right = -30.0
+offset_bottom = -30.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TopHeader" type="VBoxContainer" parent="MainContainer"]
+layout_mode = 2
+
+[node name="TitleContainer" type="HBoxContainer" parent="MainContainer/TopHeader"]
+layout_mode = 2
+alignment = 1
+
+[node name="AdventureIcon" type="Label" parent="MainContainer/TopHeader/TitleContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+text = "🗡️"
+
+[node name="MainTitle" type="Label" parent="MainContainer/TopHeader/TitleContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 36
+text = " Epic Adventure"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="MainContainer/TopHeader"]
+modulate = Color(0.8, 0.8, 0.9, 1)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Choose your path and conquer legendary challenges"
+horizontal_alignment = 1
+
+[node name="HeaderSeparator" type="HSeparator" parent="MainContainer"]
+layout_mode = 2
+
+[node name="ContentArea" type="HBoxContainer" parent="MainContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="LeftPanel" type="VBoxContainer" parent="MainContainer/ContentArea"]
+custom_minimum_size = Vector2(420, 0)
+layout_mode = 2
+
+[node name="HeaderLeft" type="VBoxContainer" parent="MainContainer/ContentArea/LeftPanel"]
+layout_mode = 2
+
+[node name="ChaptersTitle" type="Label" parent="MainContainer/ContentArea/LeftPanel/HeaderLeft"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "📚 Adventure Chapters"
+horizontal_alignment = 1
+
+[node name="ProgressIndicator" type="Label" parent="MainContainer/ContentArea/LeftPanel/HeaderLeft"]
+modulate = Color(0.7, 0.9, 1, 1)
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Progress: 0/5 chapters"
+horizontal_alignment = 1
+
+[node name="ScrollContainer" type="ScrollContainer" parent="MainContainer/ContentArea/LeftPanel"]
+custom_minimum_size = Vector2(400, 450)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ChaptersList" type="VBoxContainer" parent="MainContainer/ContentArea/LeftPanel/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Separator" type="VSeparator" parent="MainContainer/ContentArea"]
+layout_mode = 2
+
+[node name="RightPanel" type="VBoxContainer" parent="MainContainer/ContentArea"]
+custom_minimum_size = Vector2(500, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="HeaderRight" type="VBoxContainer" parent="MainContainer/ContentArea/RightPanel"]
+layout_mode = 2
+
+[node name="ChapterDetailTitle" type="Label" parent="MainContainer/ContentArea/RightPanel/HeaderRight"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "📖 Chapter Details"
+horizontal_alignment = 1
+
+[node name="ChapterDescription" type="RichTextLabel" parent="MainContainer/ContentArea/RightPanel/HeaderRight"]
+custom_minimum_size = Vector2(0, 100)
+layout_mode = 2
+bbcode_enabled = true
+text = "[center][color=lightblue]Select a chapter to view its stages and embark on your adventure![/color][/center]
+
+[b]Adventure Features:[/b]
+• Epic storylines with challenging stages
+• Unique enemies and powerful bosses  
+• Valuable rewards and rare loot
+• Star rating system for perfect clears"
+fit_content = true
+
+[node name="DetailsSeparator" type="HSeparator" parent="MainContainer/ContentArea/RightPanel"]
+layout_mode = 2
+
+[node name="StagesContainer" type="VBoxContainer" parent="MainContainer/ContentArea/RightPanel"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="StagesHeader" type="HBoxContainer" parent="MainContainer/ContentArea/RightPanel/StagesContainer"]
+layout_mode = 2
+
+[node name="StagesTitle" type="Label" parent="MainContainer/ContentArea/RightPanel/StagesContainer/StagesHeader"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 20
+text = "⚔️ Battle Stages"
+
+[node name="StageCounter" type="Label" parent="MainContainer/ContentArea/RightPanel/StagesContainer/StagesHeader"]
+modulate = Color(0.8, 0.8, 0.9, 1)
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Select chapter to view stages"
+horizontal_alignment = 2
+
+[node name="StagesScrollContainer" type="ScrollContainer" parent="MainContainer/ContentArea/RightPanel/StagesContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="StagesList" type="VBoxContainer" parent="MainContainer/ContentArea/RightPanel/StagesContainer/StagesScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="BottomSeparator" type="HSeparator" parent="MainContainer"]
+layout_mode = 2
+
+[node name="BottomPanel" type="HBoxContainer" parent="MainContainer"]
+layout_mode = 2
+
+[node name="BackButton" type="Button" parent="MainContainer/BottomPanel"]
+custom_minimum_size = Vector2(180, 50)
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "← Back to Main Menu"
+
+[node name="BottomSpacer" type="Control" parent="MainContainer/BottomPanel"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="PlayerStatusContainer" type="VBoxContainer" parent="MainContainer/BottomPanel"]
+layout_mode = 2
+
+[node name="TeamPowerLabel" type="Label" parent="MainContainer/BottomPanel/PlayerStatusContainer"]
+modulate = Color(0.9, 0.9, 1, 1)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Team Power: 0"
+horizontal_alignment = 2
+
+[node name="EnergyLabel" type="Label" parent="MainContainer/BottomPanel/PlayerStatusContainer"]
+modulate = Color(0.7, 1, 0.7, 1)
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Energy: 100/100"
+horizontal_alignment = 2

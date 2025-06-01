@@ -1,0 +1,177 @@
+[gd_scene load_steps=2 format=3 uid="uid://bdoaaswtdobng"]
+
+[ext_resource type="Script" path="res://Scripts/EnhancedBattleController.gd" id="1_battle"]
+
+[node name="EnhancedBattleUI" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_battle")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.02, 0.02, 0.05, 1)
+
+[node name="BackgroundPattern" type="ColorRect" parent="Background"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.1, 0.05, 0.15, 0.3)
+
+[node name="MainContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TopPanel" type="VBoxContainer" parent="MainContainer"]
+custom_minimum_size = Vector2(0, 120)
+layout_mode = 2
+
+[node name="BattleHeader" type="Label" parent="MainContainer/TopPanel"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "⚔️ Epic Battle"
+horizontal_alignment = 1
+
+[node name="TurnInfo" type="HBoxContainer" parent="MainContainer/TopPanel"]
+layout_mode = 2
+alignment = 1
+
+[node name="CurrentTurnLabel" type="Label" parent="MainContainer/TopPanel/TurnInfo"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Waiting for battle to start..."
+horizontal_alignment = 1
+
+[node name="TurnSeparator" type="Label" parent="MainContainer/TopPanel/TurnInfo"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = " | "
+
+[node name="TurnCounterLabel" type="Label" parent="MainContainer/TopPanel/TurnInfo"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Turn: 0"
+horizontal_alignment = 1
+
+[node name="SpeedBarContainer" type="VBoxContainer" parent="MainContainer/TopPanel"]
+layout_mode = 2
+
+[node name="SpeedBarTitle" type="Label" parent="MainContainer/TopPanel/SpeedBarContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "⚡ Turn Order"
+horizontal_alignment = 1
+
+[node name="TopSeparator" type="HSeparator" parent="MainContainer"]
+layout_mode = 2
+
+[node name="MiddlePanel" type="HBoxContainer" parent="MainContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="PlayerTeamContainer" type="VBoxContainer" parent="MainContainer/MiddlePanel"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+
+[node name="PlayerTeamTitle" type="Label" parent="MainContainer/MiddlePanel/PlayerTeamContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "👥 Your Heroes"
+horizontal_alignment = 1
+
+[node name="PlayerTeamDisplay" type="HBoxContainer" parent="MainContainer/MiddlePanel/PlayerTeamContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+alignment = 1
+
+[node name="VSLabel" type="Label" parent="MainContainer/MiddlePanel"]
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 36
+text = "⚔️
+VS"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="EnemyTeamContainer" type="VBoxContainer" parent="MainContainer/MiddlePanel"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+
+[node name="EnemyTeamTitle" type="Label" parent="MainContainer/MiddlePanel/EnemyTeamContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "👹 Enemies"
+horizontal_alignment = 1
+
+[node name="EnemyTeamDisplay" type="HBoxContainer" parent="MainContainer/MiddlePanel/EnemyTeamContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+alignment = 1
+
+[node name="MiddleSeparator" type="HSeparator" parent="MainContainer"]
+layout_mode = 2
+
+[node name="BottomPanel" type="HBoxContainer" parent="MainContainer"]
+custom_minimum_size = Vector2(0, 200)
+layout_mode = 2
+
+[node name="SkillsPanel" type="VBoxContainer" parent="MainContainer/BottomPanel"]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+
+[node name="SkillsTitle" type="Label" parent="MainContainer/BottomPanel/SkillsPanel"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "⚡ Skills & Actions"
+
+[node name="SkillsContainer" type="HBoxContainer" parent="MainContainer/BottomPanel/SkillsPanel"]
+layout_mode = 2
+alignment = 1
+
+[node name="TargetPanel" type="VBoxContainer" parent="MainContainer/BottomPanel"]
+visible = false
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+
+[node name="TargetTitle" type="Label" parent="MainContainer/BottomPanel/TargetPanel"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "🎯 Select Target"
+horizontal_alignment = 1
+
+[node name="CombatLogPanel" type="VBoxContainer" parent="MainContainer/BottomPanel"]
+custom_minimum_size = Vector2(350, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CombatLogTitle" type="Label" parent="MainContainer/BottomPanel/CombatLogPanel"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "📜 Combat Log"
+
+[node name="CombatLogScroll" type="ScrollContainer" parent="MainContainer/BottomPanel/CombatLogPanel"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="CombatLog" type="VBoxContainer" parent="MainContainer/BottomPanel/CombatLogPanel/CombatLogScroll"]
+layout_mode = 2
+size_flags_horizontal = 3

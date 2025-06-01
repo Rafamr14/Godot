@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://b567hw6hc8kfv" path="res://Scripts/Main.gd" id="1_jyhfs"]
 [ext_resource type="Script" uid="uid://321vod0dgilt" path="res://Scripts/GameManager.gd" id="2_tbgi4"]
-[ext_resource type="Script" uid="uid://dhjkvbs1q3ves" path="res://Scripts/GachaSystem.gd" id="3_tefeu"]
+[ext_resource type="Script" path="res://Scripts/GachaSystem.gd" id="3_tefeu"]
 [ext_resource type="Script" uid="uid://bw4laowun5n0p" path="res://Scripts/BattleSystem.gd" id="4_o6xl0"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_85g3d"]

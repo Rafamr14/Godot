@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://lle5db8tqdyg"]
+[gd_scene format=3 uid="uid://bwlftjnsoaye1"]
 
 [node name="ChapterCard" type="Button"]
 custom_minimum_size = Vector2(360, 120)
